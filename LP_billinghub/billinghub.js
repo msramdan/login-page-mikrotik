@@ -1779,8 +1779,10 @@ function initializeApp() {
       }
     });
 
-  // Fix untuk horizontal scroll di mobile
-  const voucherContainer = document.querySelector(".voucher-scroll-container");
+  // Fix horizontal scroll hanya layout billinghub (tema pakai list vertikal)
+  const voucherContainer = isThemedLandingPage()
+    ? null
+    : document.querySelector(".voucher-scroll-container");
   if (voucherContainer) {
     voucherContainer.addEventListener(
       "touchstart",
@@ -1829,7 +1831,34 @@ document.addEventListener(
   { passive: false }
 );
 
+function isThemedLandingPage() {
+  const body = document.body;
+  return body && body.className && /^lp-/.test(body.className);
+}
+
+function ensureThemePageScroll() {
+  if (!isThemedLandingPage()) return;
+  const body = document.body;
+  if (body) {
+    body.style.overflowY = "auto";
+    body.style.webkitOverflowScrolling = "touch";
+  }
+  const app = document.querySelector(".pwa-app");
+  if (app) {
+    app.style.height = "auto";
+    app.style.maxHeight = "none";
+    app.style.overflow = "visible";
+  }
+  const main = document.querySelector(".pwa-main");
+  if (main) {
+    main.style.overflowY = "visible";
+    main.style.height = "auto";
+    main.style.display = "block";
+  }
+}
+
 function applyScrollTweaks() {
+  ensureThemePageScroll();
   document.documentElement.style.scrollBehavior = "smooth";
   document.body.style.overflowY = "auto";
   document.body.style.webkitOverflowScrolling = "touch";

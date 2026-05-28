@@ -649,6 +649,7 @@
           "</div></div>";
       }
       grid.innerHTML = html;
+      applyModalLegacyPaint(byId("buyVoucherModal"));
     }
 
     function requestMethods(url, onDone) {
@@ -865,7 +866,7 @@
         '<div class="price-card" onclick="showBuyModal(' +
         String(v.id || 0) +
         ')">' +
-        '<div class="price-left"><div class="price-icon">🎫</div><div class="price-info">' +
+        '<div class="price-left"><div class="price-icon price-icon--ticket"><span class="price-icon__label">V</span></div><div class="price-info">' +
         '<div class="price-title">' +
         String(v.nama_voucher || "-") +
         "</div>" +
@@ -874,7 +875,7 @@
         "</div></div></div>" +
         '<div class="price-right"><span class="price-amount">' +
         String(v.harga || "-") +
-        "</span></div></div>";
+        '</span><span class="price-cta">Beli paket</span></div></div>';
     }
     list.innerHTML = html;
   }
@@ -984,10 +985,63 @@
     document.body.removeChild(textArea);
   }
 
+  function applyModalLegacyPaint(modal) {
+    if (!modal) return;
+    modal.style.display = "block";
+    modal.style.position = "fixed";
+    modal.style.top = "0";
+    modal.style.left = "0";
+    modal.style.width = "100%";
+    modal.style.height = "100%";
+    modal.style.zIndex = "10000";
+    modal.style.backgroundColor = "rgba(0,0,0,0.72)";
+    modal.style.overflowY = "auto";
+    modal.style.textAlign = "center";
+    var content = modal.querySelector ? modal.querySelector(".modal-content") : null;
+    if (content) {
+      content.style.backgroundColor = "#ffffff";
+      content.style.opacity = "1";
+      content.style.display = "inline-block";
+      content.style.textAlign = "left";
+      content.style.verticalAlign = "middle";
+      content.style.margin = "16px auto";
+      content.style.maxWidth = "500px";
+      content.style.width = "100%";
+      content.style.borderRadius = "14px";
+      content.style.boxShadow = "0 12px 28px rgba(0,0,0,0.35)";
+    }
+    var header = modal.querySelector ? modal.querySelector(".modal-header") : null;
+    if (header) header.style.backgroundColor = "#ffffff";
+    var body = modal.querySelector ? modal.querySelector(".modal-body") : null;
+    if (body) body.style.backgroundColor = "#ffffff";
+    var inputs = modal.getElementsByTagName ? modal.getElementsByTagName("input") : [];
+    for (var i = 0; i < inputs.length; i++) {
+      inputs[i].style.backgroundColor = "#ffffff";
+      inputs[i].style.color = "#333333";
+      inputs[i].style.border = "1px solid #dee2e6";
+    }
+    var textareas = modal.getElementsByTagName ? modal.getElementsByTagName("textarea") : [];
+    for (var j = 0; j < textareas.length; j++) {
+      textareas[j].style.backgroundColor = "#ffffff";
+      textareas[j].style.color = "#333333";
+      textareas[j].style.border = "1px solid #dee2e6";
+    }
+    var primaryBtns = modal.querySelectorAll
+      ? modal.querySelectorAll(".btn-primary")
+      : [];
+    for (var k = 0; k < primaryBtns.length; k++) {
+      if (!primaryBtns[k].style.backgroundColor) {
+        primaryBtns[k].style.backgroundColor = "#13737d";
+      }
+      primaryBtns[k].style.color = "#ffffff";
+    }
+  }
+
   function openModal(modalId) {
     var modal = byId(modalId);
     if (!modal) return;
     addClass(modal, "active");
+    applyModalLegacyPaint(modal);
     document.body.style.overflow = "hidden";
   }
 
@@ -995,6 +1049,7 @@
     var modal = byId(modalId);
     if (!modal) return;
     removeClass(modal, "active");
+    modal.style.display = "none";
     document.body.style.overflow = "";
   }
 
@@ -1016,10 +1071,38 @@
   window.selectPaymentMethodCard = selectPaymentMethodCard;
   window.qrinCheckPaymentStatus = qrinCheckPaymentStatus;
 
+  function isThemedLandingPage() {
+    var body = document.body;
+    return body && body.className && body.className.indexOf("lp-") === 0;
+  }
+
+  function ensureThemePageScroll() {
+    if (!isThemedLandingPage()) return;
+    var body = document.body;
+    if (body) {
+      body.style.overflowY = "auto";
+      body.style.webkitOverflowScrolling = "touch";
+    }
+    var app = document.querySelector(".pwa-app");
+    if (app) {
+      app.style.height = "auto";
+      app.style.maxHeight = "none";
+      app.style.overflow = "visible";
+    }
+    var main = document.querySelector(".pwa-main");
+    if (main) {
+      main.style.overflowY = "visible";
+      main.style.height = "auto";
+      main.style.display = "block";
+    }
+  }
+
   var appInitialized = false;
   function initializeApp() {
     if (appInitialized) return;
     appInitialized = true;
+
+    ensureThemePageScroll();
 
     document.body.classList.remove("dark");
     var input = byId("kodeVoucher");
