@@ -14,6 +14,9 @@
   var selectedVoucher = null;
   var paymentMethodsList = [];
   var selectedPaymentMethodCode = null;
+  var qrinOrderKode = null;
+  var qrinActivePaymentModal = "qrinPaymentModal";
+  var qrinCheckPaymentBusy = false;
 
   function withHttpFallback(url) {
     if (typeof url !== "string") return url;
@@ -375,6 +378,10 @@
       return;
     }
 
+    qrinOrderKode = data && data.kode_transaksi ? String(data.kode_transaksi) : null;
+    qrinActivePaymentModal = "qrinPaymentModal";
+    qrinInitCheckStatusUi("qr");
+
     closeModal("successModal");
     var summaryEl = byId("qrinQrSummary");
     if (summaryEl) {
@@ -401,6 +408,10 @@
   }
 
   function showQrinVaModal(data) {
+    qrinOrderKode = data && data.kode_transaksi ? String(data.kode_transaksi) : null;
+    qrinActivePaymentModal = "qrinVaModal";
+    qrinInitCheckStatusUi("va");
+
     closeModal("successModal");
     var body = byId("qrinVaModalBody");
     if (!body) return;
@@ -429,6 +440,123 @@
     }
     body.innerHTML = html;
     openModal("qrinVaModal");
+  }
+
+  function qrinCheckStatusElements() {
+    var isVa = qrinActivePaymentModal === "qrinVaModal";
+    return {
+      msgEl: byId(isVa ? "qrinVaPaymentStatusMsg" : "qrinPaymentStatusMsg"),
+      btn: byId(isVa ? "qrinVaCheckPaymentBtn" : "qrinCheckPaymentBtn"),
+      resultBox: byId(isVa ? "qrinVaVoucherResult" : "qrinVoucherResult"),
+      codeEl: byId(isVa ? "qrinVaVoucherCodeDisplay" : "qrinVoucherCodeDisplay"),
+      copyBtn: byId(isVa ? "qrinVaCopyVoucherBtn" : "qrinCopyVoucherBtn"),
+    };
+  }
+
+  function qrinInitCheckStatusUi(which) {
+    var isVa = which === "va";
+    var msg = byId(isVa ? "qrinVaPaymentStatusMsg" : "qrinPaymentStatusMsg");
+    var btn = byId(isVa ? "qrinVaCheckPaymentBtn" : "qrinCheckPaymentBtn");
+    var resultBox = byId(isVa ? "qrinVaVoucherResult" : "qrinVoucherResult");
+    var codeEl = byId(isVa ? "qrinVaVoucherCodeDisplay" : "qrinVoucherCodeDisplay");
+    if (btn) {
+      btn.style.display = "block";
+      btn.disabled = false;
+      btn.textContent = "Cek Pembayaran";
+    }
+    if (msg) {
+      msg.style.display = "none";
+      msg.textContent = "";
+      msg.className = "qrin-status-msg";
+    }
+    if (resultBox) resultBox.style.display = "none";
+    if (codeEl) codeEl.textContent = "";
+  }
+
+  function qrinCheckPaymentStatus() {
+    if (!qrinOrderKode || qrinCheckPaymentBusy) return;
+    var ui = qrinCheckStatusElements();
+    qrinCheckPaymentBusy = true;
+
+    if (ui.btn) {
+      ui.btn.disabled = true;
+      ui.btn.textContent = "Memeriksa...";
+    }
+    if (ui.msgEl) {
+      ui.msgEl.style.display = "block";
+      ui.msgEl.className = "qrin-status-msg qrin-status-msg--info";
+      ui.msgEl.textContent = "Memeriksa status pembayaran...";
+    }
+    if (ui.resultBox) ui.resultBox.style.display = "none";
+
+    xhrJson(
+      "POST",
+      API_CONFIG.baseUrl + "/v1/vouchers/" + API_CONFIG.token + "/cek-order-qrin",
+      { kode_transaksi: qrinOrderKode },
+      function (err, result) {
+        qrinCheckPaymentBusy = false;
+        var nextUi = qrinCheckStatusElements();
+
+        if (nextUi.btn && nextUi.btn.style.display !== "none") {
+          nextUi.btn.disabled = false;
+          nextUi.btn.textContent = "Cek Pembayaran";
+        }
+
+        if (err || !result || !result.success || !result.data) {
+          if (nextUi.msgEl) {
+            nextUi.msgEl.style.display = "block";
+            nextUi.msgEl.className = "qrin-status-msg qrin-status-msg--warn";
+            nextUi.msgEl.textContent =
+              (result && result.message) ||
+              (err && err.message) ||
+              "Gagal memeriksa status pembayaran.";
+          }
+          return;
+        }
+
+        var d = result.data;
+        if (d.paid && d.processing) {
+          if (nextUi.msgEl) {
+            nextUi.msgEl.style.display = "block";
+            nextUi.msgEl.className = "qrin-status-msg qrin-status-msg--info";
+            nextUi.msgEl.textContent =
+              result.message ||
+              "Pembayaran diterima. Voucher sedang dibuat, coba lagi beberapa detik.";
+          }
+          return;
+        }
+
+        if (d.paid && d.username_voucher) {
+          if (nextUi.msgEl) nextUi.msgEl.style.display = "none";
+          if (nextUi.codeEl) nextUi.codeEl.textContent = d.username_voucher;
+          if (nextUi.resultBox) nextUi.resultBox.style.display = "block";
+          if (nextUi.copyBtn) {
+            nextUi.copyBtn.onclick = function () {
+              var ta = document.createElement("textarea");
+              ta.value = d.username_voucher;
+              document.body.appendChild(ta);
+              ta.select();
+              try {
+                document.execCommand("copy");
+                showAlert("Kode voucher disalin", "success");
+              } catch (e) {}
+              document.body.removeChild(ta);
+            };
+          }
+          if (nextUi.btn) nextUi.btn.style.display = "none";
+          showAlert("Pembayaran berhasil. Simpan kode voucher Anda.", "success");
+          return;
+        }
+
+        if (nextUi.msgEl) {
+          nextUi.msgEl.style.display = "block";
+          nextUi.msgEl.className = "qrin-status-msg qrin-status-msg--pending";
+          nextUi.msgEl.textContent =
+            result.message ||
+            "Pembayaran belum terkonfirmasi. Setelah membayar, tunggu beberapa detik lalu cek lagi.";
+        }
+      }
+    );
   }
 
   function clearModalAlert() {
@@ -886,6 +1014,7 @@
   window.showBuyModal = showBuyModal;
   window.processPurchase = processPurchase;
   window.selectPaymentMethodCard = selectPaymentMethodCard;
+  window.qrinCheckPaymentStatus = qrinCheckPaymentStatus;
 
   var appInitialized = false;
   function initializeApp() {
