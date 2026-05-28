@@ -275,6 +275,27 @@
 
     if (canvas) canvas.style.display = "none";
 
+    if (typeof QRCode === "function") {
+      try {
+        var wrapCtor = document.createElement("div");
+        wrapCtor.id = "qrinQrFallbackTableWrap";
+        wrapCtor.style.display = "block";
+        wrapCtor.style.width = "220px";
+        wrapCtor.style.height = "220px";
+        wrapCtor.style.margin = "0 auto";
+        wrapCtor.style.background = "#fff";
+        wrapCtor.style.border = "1px solid #e5e7eb";
+        wrapCtor.style.padding = "8px";
+        container.appendChild(wrapCtor);
+        new QRCode(wrapCtor, {
+          text: qrContent,
+          width: 200,
+          height: 200,
+        });
+        return true;
+      } catch (eCtor) {}
+    }
+
     if (typeof QRCode !== "undefined" && QRCode.create) {
       try {
         var qrObj = QRCode.create(qrContent, { errorCorrectionLevel: "M" });
@@ -317,27 +338,6 @@
         container.appendChild(wrap);
         return true;
       } catch (e) {}
-    }
-
-    if (typeof QRCode === "function") {
-      try {
-        var wrapCtor = document.createElement("div");
-        wrapCtor.id = "qrinQrFallbackTableWrap";
-        wrapCtor.style.display = "block";
-        wrapCtor.style.width = "220px";
-        wrapCtor.style.height = "220px";
-        wrapCtor.style.margin = "0 auto";
-        wrapCtor.style.background = "#fff";
-        wrapCtor.style.border = "1px solid #e5e7eb";
-        wrapCtor.style.padding = "8px";
-        container.appendChild(wrapCtor);
-        new QRCode(wrapCtor, {
-          text: qrContent,
-          width: 200,
-          height: 200,
-        });
-        return true;
-      } catch (eCtor) {}
     }
 
     var img = document.createElement("img");

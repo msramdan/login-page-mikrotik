@@ -1466,14 +1466,7 @@ function showQrinPaymentModal(data) {
   canvas.width = 0;
   canvas.height = 0;
 
-  if (typeof QRCode !== "undefined" && QRCode.toCanvas) {
-    QRCode.toCanvas(canvas, qrContent, { width: 200, margin: 2 }, (err) => {
-      if (err) {
-        console.error("QRCode error:", err);
-        showAlert("Gagal menampilkan QR. Silakan coba lagi.", "danger");
-      }
-    });
-  } else if (typeof QRCode === "function" && qrContainer) {
+  if (typeof QRCode === "function" && qrContainer) {
     try {
       const legacyNode = document.createElement("div");
       legacyNode.id = "qrinQrLegacyNode";
@@ -1484,7 +1477,7 @@ function showQrinPaymentModal(data) {
       legacyNode.style.border = "1px solid #e5e7eb";
       legacyNode.style.padding = "8px";
       qrContainer.appendChild(legacyNode);
-      canvas.style.display = "none";
+      if (canvas) canvas.style.display = "none";
       new QRCode(legacyNode, {
         text: qrContent,
         width: 200,
@@ -1493,6 +1486,13 @@ function showQrinPaymentModal(data) {
     } catch (e) {
       showAlert("Gagal menampilkan QR. Silakan coba lagi.", "danger");
     }
+  } else if (typeof QRCode !== "undefined" && QRCode.toCanvas && canvas) {
+    QRCode.toCanvas(canvas, qrContent, { width: 200, margin: 2 }, (err) => {
+      if (err) {
+        console.error("QRCode error:", err);
+        showAlert("Gagal menampilkan QR. Silakan coba lagi.", "danger");
+      }
+    });
   } else {
     showAlert("Library QR tidak tersedia. Silakan refresh halaman.", "danger");
   }
