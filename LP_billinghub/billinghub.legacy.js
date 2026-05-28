@@ -260,6 +260,114 @@
     return html;
   }
 
+  function renderQrinQrFallbackImage(qrContent) {
+    var container = byId("qrisCodeContainer");
+    var canvas = byId("qrinQrCanvas");
+    if (!container) return false;
+
+    var oldImg = byId("qrinQrFallbackImg");
+    if (oldImg) removeNode(oldImg);
+    var oldTable = byId("qrinQrFallbackTableWrap");
+    if (oldTable) removeNode(oldTable);
+
+    if (canvas) canvas.style.display = "none";
+
+    if (typeof QRCode !== "undefined" && QRCode.create) {
+      try {
+        var qrObj = QRCode.create(qrContent, { errorCorrectionLevel: "M" });
+        var size = qrObj.modules.size;
+        var data = qrObj.modules.data;
+        var scale = 5;
+        var quiet = 2;
+        var html = '<table cellspacing="0" cellpadding="0" style="border-collapse:collapse;background:#fff;margin:0 auto;">';
+        for (var r = -quiet; r < size + quiet; r++) {
+          html += "<tr>";
+          for (var c = -quiet; c < size + quiet; c++) {
+            var black = false;
+            if (r >= 0 && r < size && c >= 0 && c < size) {
+              black = !!data[r * size + c];
+            }
+            html +=
+              '<td style="width:' +
+              scale +
+              "px;height:" +
+              scale +
+              "px;background:" +
+              (black ? "#000" : "#fff") +
+              ';padding:0;margin:0;"></td>';
+          }
+          html += "</tr>";
+        }
+        html += "</table>";
+
+        var wrap = document.createElement("div");
+        wrap.id = "qrinQrFallbackTableWrap";
+        wrap.style.display = "block";
+        wrap.style.width = "100%";
+        wrap.style.textAlign = "center";
+        wrap.style.background = "#fff";
+        wrap.style.border = "1px solid #e5e7eb";
+        wrap.style.padding = "8px";
+        wrap.style.maxWidth = "220px";
+        wrap.style.margin = "0 auto";
+        wrap.innerHTML = html;
+        container.appendChild(wrap);
+        return true;
+      } catch (e) {}
+    }
+
+    if (typeof QRCode === "function") {
+      try {
+        var wrapCtor = document.createElement("div");
+        wrapCtor.id = "qrinQrFallbackTableWrap";
+        wrapCtor.style.display = "block";
+        wrapCtor.style.width = "220px";
+        wrapCtor.style.height = "220px";
+        wrapCtor.style.margin = "0 auto";
+        wrapCtor.style.background = "#fff";
+        wrapCtor.style.border = "1px solid #e5e7eb";
+        wrapCtor.style.padding = "8px";
+        container.appendChild(wrapCtor);
+        new QRCode(wrapCtor, {
+          text: qrContent,
+          width: 200,
+          height: 200,
+        });
+        return true;
+      } catch (eCtor) {}
+    }
+
+    var img = document.createElement("img");
+    img.id = "qrinQrFallbackImg";
+    img.alt = "QRIS";
+    img.style.display = "block";
+    img.style.width = "200px";
+    img.style.height = "200px";
+    img.style.margin = "0 auto";
+    img.style.background = "#fff";
+    img.style.border = "1px solid #e5e7eb";
+    img.style.padding = "4px";
+
+    if (typeof QRCode !== "undefined" && QRCode.toDataURL) {
+      try {
+        QRCode.toDataURL(qrContent, { width: 220, margin: 2 }, function (err, dataUrl) {
+          if (!err && dataUrl) {
+            img.onerror = function () {};
+            img.src = dataUrl;
+            container.appendChild(img);
+          } else {
+            showAlert("QR tidak bisa dirender di browser lama ini.", "warning");
+          }
+        });
+      } catch (e) {
+        showAlert("QR tidak bisa dirender di browser lama ini.", "warning");
+      }
+    } else {
+      showAlert("QR tidak bisa dirender di browser lama ini.", "warning");
+    }
+    return true;
+  }
+
   function showQrinPaymentModal(data) {
     var qrContent = data && data.qr_content ? String(data.qr_content) : "";
     if (!qrContent) {
@@ -279,19 +387,15 @@
       showAlert("Canvas QR tidak ditemukan", "danger");
       return;
     }
+    var oldImg = byId("qrinQrFallbackImg");
+    if (oldImg) removeNode(oldImg);
+    canvas.style.display = "block";
 
     canvas.width = 0;
     canvas.height = 0;
-    if (typeof QRCode !== "undefined" && QRCode.toCanvas) {
-      QRCode.toCanvas(canvas, qrContent, { width: 200, margin: 2 }, function (err) {
-        if (err) {
-          showAlert("Gagal menampilkan QR", "danger");
-        }
-      });
-    } else {
-      showAlert("Library QR tidak tersedia", "danger");
-      return;
-    }
+    // Legacy devices often fail to paint canvas QR without throwing errors.
+    // Force local table/dataURL renderer so QR stays visible offline/walled-garden.
+    renderQrinQrFallbackImage(qrContent);
 
     openModal("qrinPaymentModal");
   }

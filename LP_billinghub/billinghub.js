@@ -1454,6 +1454,14 @@ function showQrinPaymentModal(data) {
   }
 
   const canvas = document.getElementById("qrinQrCanvas");
+  const qrContainer = document.getElementById("qrisCodeContainer");
+  const oldLegacyNode = document.getElementById("qrinQrLegacyNode");
+  if (oldLegacyNode && oldLegacyNode.parentNode) {
+    oldLegacyNode.parentNode.removeChild(oldLegacyNode);
+  }
+  if (canvas) {
+    canvas.style.display = "block";
+  }
 
   canvas.width = 0;
   canvas.height = 0;
@@ -1465,6 +1473,26 @@ function showQrinPaymentModal(data) {
         showAlert("Gagal menampilkan QR. Silakan coba lagi.", "danger");
       }
     });
+  } else if (typeof QRCode === "function" && qrContainer) {
+    try {
+      const legacyNode = document.createElement("div");
+      legacyNode.id = "qrinQrLegacyNode";
+      legacyNode.style.width = "220px";
+      legacyNode.style.height = "220px";
+      legacyNode.style.margin = "0 auto";
+      legacyNode.style.background = "#fff";
+      legacyNode.style.border = "1px solid #e5e7eb";
+      legacyNode.style.padding = "8px";
+      qrContainer.appendChild(legacyNode);
+      canvas.style.display = "none";
+      new QRCode(legacyNode, {
+        text: qrContent,
+        width: 200,
+        height: 200,
+      });
+    } catch (e) {
+      showAlert("Gagal menampilkan QR. Silakan coba lagi.", "danger");
+    }
   } else {
     showAlert("Library QR tidak tersedia. Silakan refresh halaman.", "danger");
   }
