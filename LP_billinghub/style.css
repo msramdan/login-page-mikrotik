@@ -172,12 +172,14 @@ body.dark .modal-alert-info {
     }
 }
 .tripay-method-card {
+    border: 1px solid #dee2e6;
     border: 1px solid var(--border-light);
     border-radius: 8px;
     padding: 6px 4px 8px;
     text-align: center;
     cursor: pointer;
     transition: border-color 0.2s, box-shadow 0.2s, opacity 0.2s;
+    background: #f8f9fa;
     background: var(--card-light);
     min-height: 76px;
     display: flex;
@@ -194,6 +196,7 @@ body.dark .tripay-method-card {
     box-shadow: 0 1px 6px rgba(19, 115, 125, 0.15);
 }
 .tripay-method-card.selected {
+    border-color: #28a745;
     border-color: var(--secondary);
     border-width: 2px;
     box-shadow: 0 1px 8px rgba(40, 167, 69, 0.25);
@@ -245,6 +248,7 @@ body.dark .tripay-method-fee--qris {
 .tripay-method-name {
     font-size: 0.62rem;
     font-weight: 600;
+    color: #333333;
     color: var(--text-light);
     overflow: hidden;
     text-overflow: ellipsis;
@@ -633,7 +637,9 @@ body.dark .qris-by-text {
 
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+    background: #ffffff;
     background: var(--bg-light);
+    color: #333333;
     color: var(--text-light);
     transition: background 0.3s, color 0.3s;
     min-height: 100vh;
@@ -653,6 +659,7 @@ body.dark {
 .header {
     position: sticky;
     top: 0;
+    background: #ffffff;
     background: var(--bg-light);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
@@ -747,6 +754,7 @@ body.dark .welcome-section {
 
 /* Form Input Voucher */
 .voucher-section {
+    background: #f8f9fa;
     background: var(--card-light);
     padding: 18px 15px;
     border-radius: 14px;
@@ -818,10 +826,13 @@ input[type="tel"],
 input[type="password"] {
     width: 100%;
     padding: 12px 14px;
+    border: 1.5px solid #dee2e6;
     border: 1.5px solid var(--border-light);
     border-radius: 10px;
     font-size: 14px;
+    background: #ffffff;
     background: var(--bg-light);
+    color: #333333;
     color: var(--text-light);
     transition: all 0.3s;
     font-family: inherit;
@@ -844,6 +855,7 @@ input:focus {
 .btn-primary {
     width: 100%;
     padding: 12px;
+    background: #13737D;
     background: var(--primary);
     color: white;
     border: none;
@@ -875,6 +887,7 @@ input:focus {
 }
 
 .menu-card {
+    background: #f8f9fa;
     background: var(--card-light);
     padding: 15px 8px;
     border-radius: 14px;
@@ -936,10 +949,12 @@ body.dark .menu-card h4 {
     bottom: 0;
     left: 0;
     width: 100%;
+    background: #ffffff;
     background: var(--bg-light);
     padding: 12px 20px;
     text-align: center;
     font-size: 0.75rem;
+    color: #333333;
     color: var(--text-light);
     border-top: 1px solid var(--border-light);
     z-index: 99;
@@ -1103,6 +1118,7 @@ body.dark .voucher-scroll-container::-webkit-scrollbar-thumb {
 }
 
 .price-card {
+    background: #f8f9fa;
     background: var(--card-light);
     border-radius: 12px;
     transition: all 0.2s;
@@ -1110,6 +1126,7 @@ body.dark .voucher-scroll-container::-webkit-scrollbar-thumb {
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    border: 1px solid #dee2e6;
     border: 1px solid var(--border-light);
     min-width: 200px;
     max-width: 200px;
@@ -1185,6 +1202,7 @@ body.dark .price-title {
 
 .price-right {
     padding: 12px 15px;
+    background: #13737D;
     background: var(--primary);
     color: white;
     display: flex;
@@ -1373,7 +1391,7 @@ body.dark .modal-content {
     border-bottom: 1px solid var(--border-light);
     position: sticky;
     top: 0;
-    background: var(--bg-light);
+    background-color: var(--bg-light);
     z-index: 10;
     border-radius: 20px 20px 0 0;
 }
@@ -1399,6 +1417,7 @@ body.dark .modal-handle {
     font-size: 1.2rem;
     font-weight: 700;
     text-align: center;
+    color: #333333;
     color: var(--text-light);
 }
 
@@ -1443,6 +1462,7 @@ body.dark .close-modal {
     margin-bottom: 6px;
     font-weight: 600;
     font-size: 0.9rem;
+    color: #333333;
     color: var(--text-light);
 }
 
@@ -1472,6 +1492,7 @@ body.dark .form-group label {
     line-height: 1.5;
     opacity: 0.8;
     margin-bottom: 15px;
+    color: #333333;
     color: var(--text-light);
 }
 

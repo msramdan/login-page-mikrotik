@@ -1,4 +1,4 @@
-﻿.auto-login-message {
+.auto-login-message {
     background: rgba(40, 167, 69, 0.1);
     border: 1px solid rgba(40, 167, 69, 0.2);
     padding: 12px 15px;
@@ -172,12 +172,14 @@ body.dark .modal-alert-info {
     }
 }
 .tripay-method-card {
+    border: 1px solid #dee2e6;
     border: 1px solid var(--border-light);
     border-radius: 8px;
     padding: 6px 4px 8px;
     text-align: center;
     cursor: pointer;
     transition: border-color 0.2s, box-shadow 0.2s, opacity 0.2s;
+    background: #f8f9fa;
     background: var(--card-light);
     min-height: 76px;
     display: flex;
@@ -194,6 +196,7 @@ body.dark .tripay-method-card {
     box-shadow: 0 1px 6px rgba(19, 115, 125, 0.15);
 }
 .tripay-method-card.selected {
+    border-color: #28a745;
     border-color: var(--secondary);
     border-width: 2px;
     box-shadow: 0 1px 8px rgba(40, 167, 69, 0.25);
@@ -245,6 +248,7 @@ body.dark .tripay-method-fee--qris {
 .tripay-method-name {
     font-size: 0.62rem;
     font-weight: 600;
+    color: #333333;
     color: var(--text-light);
     overflow: hidden;
     text-overflow: ellipsis;
@@ -615,8 +619,8 @@ body.dark .qris-by-text {
 }
 
 :root {
-    --primary: #1B7A4E;
-    --primary-dark: #156042;
+    --primary: #13737D;
+    --primary-dark: #0f5a63;
     --secondary: #28a745;
     --danger: #dc3545;
     --warning: #ffc107;
@@ -633,7 +637,9 @@ body.dark .qris-by-text {
 
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+    background: #ffffff;
     background: var(--bg-light);
+    color: #333333;
     color: var(--text-light);
     transition: background 0.3s, color 0.3s;
     min-height: 100vh;
@@ -653,6 +659,7 @@ body.dark {
 .header {
     position: sticky;
     top: 0;
+    background: #ffffff;
     background: var(--bg-light);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
@@ -708,71 +715,6 @@ body.dark .theme-toggle {
     padding: 0;
 }
 
-/* Banner promo */
-.banner-slider {
-    position: relative;
-    margin: 0 12px 14px;
-    border-radius: 16px;
-    overflow: hidden;
-    box-shadow: 0 8px 24px rgba(27, 122, 78, 0.22);
-    border: 1px solid rgba(27, 122, 78, 0.2);
-}
-
-.banner-slider--single .banner-nav,
-.banner-slider--single .banner-dots {
-    display: none !important;
-}
-
-.banner-slider--single .banner-track {
-    transform: none !important;
-}
-
-.banner-viewport {
-    overflow: hidden;
-    width: 100%;
-}
-
-.banner-track {
-    display: flex;
-    transition: transform 0.45s ease;
-}
-
-.banner-slide {
-    flex: 0 0 100%;
-    margin: 0;
-    position: relative;
-}
-
-.banner-slide img {
-    display: block;
-    width: 100%;
-    height: 160px;
-    object-fit: cover;
-}
-
-.banner-caption {
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    padding: 12px 14px;
-    background: rgba(0, 0, 0, 0.55);
-    color: #fff;
-}
-
-.banner-caption-title {
-    display: block;
-    font-size: 0.95rem;
-    font-weight: 700;
-}
-
-.banner-caption-desc {
-    display: block;
-    font-size: 0.75rem;
-    opacity: 0.92;
-    margin-top: 2px;
-}
-
 /* Welcome Section */
 .welcome-section {
     background: rgba(19, 115, 125, 0.1);
@@ -812,6 +754,7 @@ body.dark .welcome-section {
 
 /* Form Input Voucher */
 .voucher-section {
+    background: #f8f9fa;
     background: var(--card-light);
     padding: 18px 15px;
     border-radius: 14px;
@@ -883,10 +826,13 @@ input[type="tel"],
 input[type="password"] {
     width: 100%;
     padding: 12px 14px;
+    border: 1.5px solid #dee2e6;
     border: 1.5px solid var(--border-light);
     border-radius: 10px;
     font-size: 14px;
+    background: #ffffff;
     background: var(--bg-light);
+    color: #333333;
     color: var(--text-light);
     transition: all 0.3s;
     font-family: inherit;
@@ -909,6 +855,7 @@ input:focus {
 .btn-primary {
     width: 100%;
     padding: 12px;
+    background: #13737D;
     background: var(--primary);
     color: white;
     border: none;
@@ -940,6 +887,7 @@ input:focus {
 }
 
 .menu-card {
+    background: #f8f9fa;
     background: var(--card-light);
     padding: 15px 8px;
     border-radius: 14px;
@@ -1001,10 +949,12 @@ body.dark .menu-card h4 {
     bottom: 0;
     left: 0;
     width: 100%;
+    background: #ffffff;
     background: var(--bg-light);
     padding: 12px 20px;
     text-align: center;
     font-size: 0.75rem;
+    color: #333333;
     color: var(--text-light);
     border-top: 1px solid var(--border-light);
     z-index: 99;
@@ -1168,6 +1118,7 @@ body.dark .voucher-scroll-container::-webkit-scrollbar-thumb {
 }
 
 .price-card {
+    background: #f8f9fa;
     background: var(--card-light);
     border-radius: 12px;
     transition: all 0.2s;
@@ -1175,6 +1126,7 @@ body.dark .voucher-scroll-container::-webkit-scrollbar-thumb {
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    border: 1px solid #dee2e6;
     border: 1px solid var(--border-light);
     min-width: 200px;
     max-width: 200px;
@@ -1250,6 +1202,7 @@ body.dark .price-title {
 
 .price-right {
     padding: 12px 15px;
+    background: #13737D;
     background: var(--primary);
     color: white;
     display: flex;
@@ -1369,12 +1322,14 @@ body.dark .alert-info {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.72);
     z-index: 1000;
-    align-items: flex-end;
+    align-items: center;
     justify-content: center;
     animation: fadeIn 0.3s;
-    padding: 0;
+    padding: 10px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
 .modal.active {
@@ -1402,18 +1357,21 @@ body.dark .alert-info {
 }
 
 .modal-content {
+    background: #ffffff;
     background: var(--bg-light);
     padding: 0;
-    border-radius: 20px 20px 0 0;
+    border-radius: 14px;
     width: 100%;
     max-width: 500px;
     position: relative;
     animation: slideUp 0.3s;
-    max-height: 85vh;
+    max-height: 92vh;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
     -ms-overflow-style: none;
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
+    opacity: 1;
 }
 
 .modal-content::-webkit-scrollbar {
@@ -1428,11 +1386,12 @@ body.dark .modal-content {
 }
 
 .modal-header {
+    background-color: #ffffff;
     padding: 18px 18px 12px;
     border-bottom: 1px solid var(--border-light);
     position: sticky;
     top: 0;
-    background: var(--bg-light);
+    background-color: var(--bg-light);
     z-index: 10;
     border-radius: 20px 20px 0 0;
 }
@@ -1458,6 +1417,7 @@ body.dark .modal-handle {
     font-size: 1.2rem;
     font-weight: 700;
     text-align: center;
+    color: #333333;
     color: var(--text-light);
 }
 
@@ -1466,7 +1426,9 @@ body.dark .modal-title {
 }
 
 .modal-body {
+    background: #ffffff;
     padding: 18px;
+    opacity: 1;
 }
 
 .close-modal {
@@ -1500,6 +1462,7 @@ body.dark .close-modal {
     margin-bottom: 6px;
     font-weight: 600;
     font-size: 0.9rem;
+    color: #333333;
     color: var(--text-light);
 }
 
@@ -1529,6 +1492,7 @@ body.dark .form-group label {
     line-height: 1.5;
     opacity: 0.8;
     margin-bottom: 15px;
+    color: #333333;
     color: var(--text-light);
 }
 
@@ -1673,6 +1637,22 @@ body.dark .admin-contact-info {
 
 /* Mobile-specific fixes */
 @media (max-width: 767px) {
+    .modal {
+        padding: 8px;
+        align-items: center;
+    }
+
+    .modal-content {
+        max-width: 100%;
+        max-height: 90vh;
+        border-radius: 12px;
+        margin: auto;
+    }
+
+    .modal-header {
+        border-radius: 12px 12px 0 0;
+    }
+
     .voucher-scroll-container {
         overflow-x: scroll;
         overflow-y: hidden;
@@ -1758,883 +1738,3 @@ button,
 .scanner-btn {
     touch-action: manipulation;
 }
-
-
-/* ============================================================
-   PWA shell â€” sama di HP & desktop (frame app 430px)
-   ============================================================ */
-
-body[class^="lp-"] .theme-toggle,
-body[class^="lp-"] .header {
-    display: none !important;
-}
-
-body[class^="lp-"] {
-    margin: 0;
-    padding: 0;
-    min-height: 100dvh;
-    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    -webkit-font-smoothing: antialiased;
-    background: #c8cdd2;
-    overflow-x: hidden;
-    touch-action: manipulation;
-    padding-bottom: 0 !important;
-}
-
-body[class^="lp-"] .pwa-app {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    max-width: 430px;
-    height: 100dvh;
-    min-height: 100dvh;
-    max-height: 100dvh;
-    margin: 0 auto;
-    background: var(--pwa-bg, #f7f8fa);
-    overflow: hidden;
-    position: relative;
-}
-
-@media (min-width: 480px) {
-    body[class^="lp-"] {
-        padding: 20px 0;
-        display: flex;
-        justify-content: center;
-        align-items: flex-start;
-    }
-
-    body[class^="lp-"] .pwa-app {
-        min-height: min(880px, calc(100dvh - 40px));
-        max-height: calc(100dvh - 40px);
-        border-radius: 28px;
-        box-shadow:
-            0 24px 64px rgba(0, 0, 0, 0.18),
-            0 0 0 1px rgba(0, 0, 0, 0.06);
-    }
-}
-
-/* â€”â€” Header â€”â€” */
-body[class^="lp-"] .pwa-header {
-    flex-shrink: 0;
-    padding: max(10px, env(safe-area-inset-top, 0px)) 16px 12px;
-    background: var(--pwa-header-bg, #fff);
-    border-bottom: 1px solid var(--pwa-border, rgba(0, 0, 0, 0.07));
-    z-index: 10;
-}
-
-body[class^="lp-"] .pwa-header__row {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-body[class^="lp-"] .pwa-header__icon {
-    font-size: 1.4rem;
-    line-height: 1;
-}
-
-body[class^="lp-"] .pwa-header__badge {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 42px;
-    height: 30px;
-    background: var(--pwa-primary, #c41e3a);
-    color: #fff;
-    font-weight: 800;
-    font-size: 0.72rem;
-    letter-spacing: 0.06em;
-    flex-shrink: 0;
-}
-
-body[class^="lp-"] .pwa-header__title {
-    margin: 0;
-    font-size: 1.05rem;
-    font-weight: 700;
-    color: var(--pwa-text, #111);
-    line-height: 1.2;
-}
-
-body[class^="lp-"] .pwa-header__theme {
-    margin: 2px 0 0;
-    font-size: 0.72rem;
-    font-weight: 500;
-    color: var(--pwa-muted, #6b7280);
-}
-
-body[class^="lp-"] .pwa-header .welcome-section {
-    margin: 0;
-    padding: 0;
-    background: transparent;
-    border: none;
-    box-shadow: none;
-}
-
-body[class^="lp-"] .pwa-header .company-name {
-    margin: 0;
-    font-size: 1.05rem;
-    font-weight: 700;
-    line-height: 1.25;
-    color: var(--pwa-text, #111);
-}
-
-body[class^="lp-"] .contact-info {
-    display: none !important;
-}
-
-body[class^="lp-"] .pwa-card--profile {
-    display: none !important;
-}
-
-body[class^="lp-"] .pwa-stripe {
-    height: 4px;
-    flex-shrink: 0;
-    background: repeating-linear-gradient(90deg, #c41e3a 0 24px, #fff 24px 48px);
-}
-
-/* —— Scroll area (tanpa indikator scrollbar) —— */
-body[class^="lp-"] .pwa-main {
-    flex: 1 1 auto;
-    min-height: 0;
-    overflow-x: hidden;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-    overscroll-behavior-y: contain;
-    touch-action: pan-y;
-    padding: 12px 16px 8px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-}
-
-body[class^="lp-"] .pwa-main::-webkit-scrollbar {
-    display: none;
-    width: 0;
-    height: 0;
-    background: transparent;
-}
-
-/* Mobile: scroll di area konten, header & dock tetap */
-@media (max-width: 479px) {
-    body[class^="lp-"] {
-        overflow: hidden;
-        height: 100dvh;
-    }
-
-    body[class^="lp-"] .pwa-app {
-        height: 100dvh;
-        min-height: 100dvh;
-        max-height: 100dvh;
-    }
-
-    body[class^="lp-"] .pwa-main {
-        flex: 1 1 auto;
-        min-height: 0;
-        overflow-y: scroll;
-        overflow-x: hidden;
-        -webkit-overflow-scrolling: touch;
-    }
-}
-
-/* Jangan pakai scroll horizontal katalog legacy di tema PWA */
-@media (max-width: 767px) {
-    body[class^="lp-"] .voucher-scroll-container {
-        overflow: visible !important;
-        margin-right: 0 !important;
-        padding-right: 0 !important;
-        padding-bottom: 0 !important;
-        max-height: none !important;
-    }
-
-    body[class^="lp-"] .price-list {
-        min-width: 0 !important;
-        padding-right: 0 !important;
-        white-space: normal !important;
-    }
-
-    body[class^="lp-"] .price-card {
-        min-width: 100% !important;
-        max-width: 100% !important;
-        width: 100% !important;
-        height: auto !important;
-        min-height: 0 !important;
-    }
-}
-
-/* â€”â€” Hero / banner â€”â€” */
-body[class^="lp-"] .pwa-hero .banner-slider {
-    margin: 0 !important;
-    border-radius: 14px;
-    overflow: hidden;
-    min-height: 0;
-    box-shadow: none;
-}
-
-body[class^="lp-"] .pwa-hero .banner-slide img {
-    width: 100%;
-    display: block;
-    aspect-ratio: 16 / 9;
-    max-height: 168px;
-    object-fit: cover;
-}
-
-body[class^="lp-"] .pwa-hero--id .banner-slide img {
-    border-radius: 0;
-    max-height: 150px;
-}
-
-body[class^="lp-"] .pwa-hero--ny {
-    position: relative;
-    border-radius: 14px;
-    overflow: hidden;
-}
-
-body[class^="lp-"] .pwa-hero--ny .banner-slider {
-    border-radius: 14px;
-}
-
-body[class^="lp-"] .pwa-hero--ny .banner-slide img {
-    max-height: 200px;
-    aspect-ratio: 4 / 3;
-}
-
-body[class^="lp-"] .pwa-hero__overlay {
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    padding: 14px 14px 16px;
-    background: linear-gradient(transparent, rgba(42, 38, 64, 0.82));
-}
-
-body[class^="lp-"] .pwa-hero__welcome {
-    margin: 0 !important;
-    padding: 0 !important;
-    background: transparent !important;
-    border: none !important;
-}
-
-body[class^="lp-"] .pwa-hero__welcome .company-name {
-    color: #fff !important;
-    font-size: 1.05rem;
-    font-weight: 700;
-}
-
-body[class^="lp-"] .pwa-hero__welcome .contact-info {
-    color: rgba(255, 255, 255, 0.88) !important;
-    font-size: 0.76rem;
-    margin-top: 4px;
-}
-
-/* â€”â€” Cards â€”â€” */
-body[class^="lp-"] .pwa-card {
-    background: var(--pwa-card, #fff);
-    border-radius: 16px;
-    padding: 16px;
-    border: 1px solid var(--pwa-border, rgba(0, 0, 0, 0.07));
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
-}
-
-body[class^="lp-"] .pwa-card--profile .company-name {
-    font-size: 1.05rem;
-    font-weight: 700;
-    color: var(--pwa-primary);
-    line-height: 1.3;
-}
-
-body[class^="lp-"] .pwa-card--profile .contact-info {
-    font-size: 0.78rem;
-    color: var(--pwa-muted);
-    margin-top: 4px;
-    line-height: 1.4;
-}
-
-body[class^="lp-"] .pwa-section-label {
-    margin: 0 0 12px;
-    font-size: 0.65rem;
-    font-weight: 800;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--pwa-primary);
-}
-
-/* â€”â€” Tabs & form â€”â€” */
-body[class^="lp-"] .pwa-tabs {
-    display: flex;
-    gap: 4px;
-    padding: 4px;
-    background: var(--pwa-tabs-bg, #eef0f2);
-    border-radius: 12px;
-    margin-bottom: 14px;
-}
-
-body[class^="lp-"] .pwa-tabs .login-tab-button {
-    flex: 1;
-    border: none;
-    background: transparent !important;
-    color: var(--pwa-muted) !important;
-    font-size: 0.82rem;
-    font-weight: 600;
-    padding: 10px 8px;
-    border-radius: 10px;
-    cursor: pointer;
-    box-shadow: none !important;
-}
-
-body[class^="lp-"] .pwa-tabs .login-tab-button.active {
-    background: var(--pwa-primary) !important;
-    color: #fff !important;
-}
-
-body[class^="lp-"] .pwa-card--login .input-wrapper {
-    margin-bottom: 0;
-}
-
-body[class^="lp-"] .pwa-card--login input[type="text"],
-body[class^="lp-"] .pwa-card--login input[type="password"] {
-    width: 100%;
-    box-sizing: border-box;
-    padding: 14px 16px;
-    margin-bottom: 10px;
-    border: 1px solid var(--pwa-border);
-    border-radius: 12px;
-    font-size: 1rem;
-    background: var(--pwa-input-bg, #fafbfc);
-    height: auto;
-}
-
-body[class^="lp-"] .pwa-card--login .btn-primary {
-    width: 100%;
-    margin-top: 4px;
-    padding: 14px;
-    border-radius: 12px;
-    border: none;
-    font-size: 0.95rem;
-    font-weight: 600;
-    cursor: pointer;
-    background: var(--pwa-primary) !important;
-    color: #fff !important;
-}
-
-body[class^="lp-"] .pwa-notice {
-    color: #7a3030;
-    background: #fdf0f0;
-    border: 1px solid #f0d0d0;
-    border-radius: 10px;
-    padding: 10px 36px 10px 12px;
-    margin-bottom: 12px;
-    font-size: 0.85rem;
-    text-align: left;
-    max-width: none;
-    position: relative;
-}
-
-body[class^="lp-"] .pwa-notice .close-btn {
-    position: absolute;
-    top: 50%;
-    right: 10px;
-    transform: translateY(-50%);
-    background: none;
-    border: none;
-    font-size: 1.2rem;
-    cursor: pointer;
-    color: inherit;
-    padding: 0 4px;
-}
-
-/* —— Bottom dock —— */
-body[class^="lp-"] .pwa-dock {
-    flex-shrink: 0;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    padding: 12px 16px max(12px, env(safe-area-inset-bottom, 0px));
-    background: var(--pwa-dock-bg, #fff);
-    border-top: 1px solid var(--pwa-border);
-}
-
-body[class^="lp-"] .pwa-dock.menu-section {
-    margin-bottom: 0;
-}
-
-body[class^="lp-"] .pwa-dock__item,
-body[class^="lp-"] .pwa-dock .menu-card {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: flex-start;
-    gap: 10px;
-    min-height: 58px !important;
-    height: auto;
-    margin: 0;
-    padding: 10px 12px;
-    border: 1px solid var(--pwa-border);
-    border-radius: 14px;
-    background: var(--pwa-card);
-    cursor: pointer;
-    font-family: inherit;
-    color: var(--pwa-text);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-    text-align: left;
-    overflow: visible;
-    transition: transform 0.15s ease, border-color 0.15s ease;
-}
-
-body[class^="lp-"] .pwa-dock__item:active {
-    transform: scale(0.98);
-    border-color: var(--pwa-primary);
-}
-
-body[class^="lp-"] .pwa-dock__item.whatsapp-card {
-    color: var(--pwa-text);
-}
-
-body[class^="lp-"] .pwa-dock__item.whatsapp-card::after {
-    display: none !important;
-    content: none !important;
-}
-
-body[class^="lp-"] .pwa-dock__icon-wrap {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    width: 44px;
-    height: 44px;
-    border-radius: 12px;
-    background: var(--pwa-dock-icon-bg, rgba(0, 0, 0, 0.06));
-    color: var(--pwa-primary);
-}
-
-body[class^="lp-"] .pwa-dock__icon-wrap--admin {
-    background: var(--pwa-dock-admin-bg, rgba(18, 140, 126, 0.12));
-    color: var(--pwa-dock-admin-color, #128c7e);
-}
-
-body[class^="lp-"] .pwa-dock__svg {
-    display: block;
-    width: 26px;
-    height: 26px;
-}
-
-body[class^="lp-"] .pwa-dock__icon {
-    display: none;
-}
-
-body[class^="lp-"] .pwa-dock__label {
-    font-size: 0.8rem;
-    font-weight: 700;
-    line-height: 1.25;
-    flex: 1;
-    min-width: 0;
-}
-
-body[class^="lp-"] .pwa-dock .menu-card-icon {
-    display: none;
-}
-
-body[class^="lp-"] .pwa-foot {
-    flex-shrink: 0;
-    margin: 0;
-    padding: 4px 16px 8px;
-    text-align: center;
-    font-size: 0.65rem;
-    color: var(--pwa-muted);
-    background: var(--pwa-dock-bg, #fff);
-}
-
-body[class^="lp-"] .pwa-foot a {
-    color: var(--pwa-primary);
-    font-weight: 600;
-}
-
-/* â€”â€” Katalog â€”â€” */
-body[class^="lp-"] .catalog-shop {
-    margin: 0;
-    padding: 0;
-    background: transparent;
-    border: none;
-    box-shadow: none;
-}
-
-body[class^="lp-"] .catalog-shop__head {
-    display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-    gap: 12px;
-    margin-bottom: 12px;
-}
-
-body[class^="lp-"] .catalog-shop__label {
-    display: block;
-    font-size: 0.65rem;
-    font-weight: 600;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    opacity: 0.75;
-    margin-bottom: 2px;
-}
-
-body[class^="lp-"] .catalog-shop__title {
-    font-size: 1rem;
-    font-weight: 700;
-    margin: 0;
-}
-
-body[class^="lp-"] .catalog-shop .refresh-btn {
-    width: 36px;
-    height: 36px;
-    border-radius: 10px;
-    border: 1px solid var(--pwa-border);
-    background: var(--pwa-card);
-    cursor: pointer;
-}
-
-body[class^="lp-"] .voucher-scroll-container {
-    overflow: visible !important;
-    margin: 0 !important;
-    padding: 0 !important;
-}
-
-body[class^="lp-"] .price-list {
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 8px !important;
-    min-width: 0 !important;
-    white-space: normal !important;
-    padding: 0 !important;
-}
-
-body[class^="lp-"] .price-card {
-    display: grid !important;
-    grid-template-columns: 1fr auto !important;
-    align-items: center !important;
-    gap: 10px !important;
-    width: 100% !important;
-    min-width: 0 !important;
-    max-width: 100% !important;
-    height: auto !important;
-    min-height: 0 !important;
-    padding: 12px 14px !important;
-    margin: 0 !important;
-    border-radius: 14px !important;
-    border: 1px solid var(--pwa-border) !important;
-    background: var(--pwa-card) !important;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03) !important;
-    cursor: pointer;
-}
-
-body[class^="lp-"] .price-left {
-    display: flex !important;
-    align-items: center;
-    gap: 10px;
-    padding: 0 !important;
-    min-width: 0;
-}
-
-body[class^="lp-"] .price-icon {
-    width: 40px !important;
-    height: 40px !important;
-    border-radius: 10px !important;
-    font-size: 1rem !important;
-    flex-shrink: 0;
-}
-
-body[class^="lp-"] .price-title {
-    font-size: 0.88rem !important;
-    font-weight: 600 !important;
-    white-space: normal !important;
-}
-
-body[class^="lp-"] .price-duration {
-    font-size: 0.7rem !important;
-    opacity: 0.65;
-}
-
-body[class^="lp-"] .price-right {
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: flex-end !important;
-    gap: 4px !important;
-    width: auto !important;
-    max-width: 38% !important;
-    background: transparent !important;
-    border: none !important;
-    padding: 0 !important;
-    margin: 0 !important;
-}
-
-body[class^="lp-"] .price-amount {
-    font-size: 0.95rem;
-    font-weight: 700;
-}
-
-body[class^="lp-"] .price-cta {
-    font-size: 0.65rem;
-    font-weight: 700;
-    padding: 5px 10px;
-    border-radius: 8px;
-    border: none;
-    white-space: nowrap;
-}
-
-@media (max-width: 767px) {
-    body[class^="lp-"] .price-card {
-        min-width: 100% !important;
-        max-width: 100% !important;
-    }
-}
-
-/* ===== HARI RAYA ===== */
-body.lp-hari-raya {
-    --pwa-primary: #1b7a4e;
-    --pwa-bg: #f4f8f5;
-    --pwa-card: #fff;
-    --pwa-header-bg: #fff;
-    --pwa-dock-bg: #fff;
-    --pwa-border: rgba(27, 122, 78, 0.12);
-    --pwa-muted: #6b7c72;
-    --pwa-tabs-bg: #e8f0ea;
-    --pwa-input-bg: #fafcf9;
-    --pwa-dock-icon-bg: rgba(27, 122, 78, 0.12);
-    --pwa-dock-admin-bg: rgba(18, 140, 126, 0.12);
-    --pwa-dock-admin-color: #128c7e;
-}
-
-body.lp-hari-raya .catalog-shop--raya .price-icon {
-    background: #eef6f0 !important;
-    color: #1b7a4e !important;
-}
-
-body.lp-hari-raya .catalog-shop--raya .price-amount {
-    color: #1b7a4e;
-}
-
-body.lp-hari-raya .catalog-shop--raya .price-cta {
-    background: #1b7a4e;
-    color: #fff;
-}
-
-body.lp-hari-raya .catalog-shop__label {
-    color: #b8942e;
-}
-
-/* Siluet agamis — bg.png sebagai latar utama app (halus & transparan) */
-body.lp-hari-raya .pwa-app::before,
-body.lp-idul-adha .pwa-app::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: url("bg.png") no-repeat center 48%;
-    background-size: min(155%, 640px);
-    pointer-events: none;
-    z-index: 0;
-}
-
-body.lp-hari-raya .pwa-app > *:not(.loading),
-body.lp-idul-adha .pwa-app > *:not(.loading) {
-    position: relative;
-    z-index: 1;
-}
-
-body.lp-hari-raya .pwa-app::before {
-    opacity: 0.11;
-}
-
-body.lp-idul-adha .pwa-app::before {
-    opacity: 0.12;
-}
-
-/* ===== KEMERDEKAAN ===== */
-body.lp-kemerdekaan {
-    --pwa-primary: #c41e3a;
-    --pwa-bg: #f8f6f6;
-    --pwa-card: #fff;
-    --pwa-header-bg: #fff;
-    --pwa-dock-bg: #fff;
-    --pwa-border: rgba(0, 0, 0, 0.08);
-    --pwa-muted: #666;
-    --pwa-tabs-bg: #f0e8e8;
-    --pwa-input-bg: #fff;
-}
-
-body.lp-kemerdekaan .pwa-header--id {
-    border-bottom-width: 3px;
-    border-bottom-color: #c41e3a;
-}
-
-body.lp-kemerdekaan .pwa-hero--id .banner-slider {
-    border-radius: 0;
-}
-
-body.lp-kemerdekaan .catalog-shop--id .price-list {
-    gap: 6px !important;
-}
-
-body.lp-kemerdekaan .catalog-shop--id .price-card {
-    border-radius: 0 !important;
-    border-left: 4px solid #c41e3a !important;
-}
-
-body.lp-kemerdekaan .catalog-shop--id .price-cta {
-    border-radius: 0;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    background: #c41e3a;
-    color: #fff;
-}
-
-body.lp-kemerdekaan .catalog-shop--id .price-amount {
-    color: #c41e3a;
-}
-
-body.lp-kemerdekaan .pwa-tabs--id .login-tab-button.active {
-    border-radius: 0;
-}
-
-body.lp-kemerdekaan .pwa-card--login {
-    border-width: 2px;
-    border-radius: 0;
-}
-
-/* ===== TAHUN BARU ===== */
-body.lp-tahun-baru {
-    --pwa-primary: #5b4f8a;
-    --pwa-bg: #f3f1f8;
-    --pwa-card: #fff;
-    --pwa-header-bg: #fff;
-    --pwa-dock-bg: #fff;
-    --pwa-border: rgba(91, 79, 138, 0.12);
-    --pwa-muted: #7a7194;
-    --pwa-tabs-bg: #ebe8f2;
-    --pwa-input-bg: #faf9fc;
-}
-
-body.lp-tahun-baru .pwa-header--ny {
-    background: #5b4f8a;
-    border-bottom: none;
-}
-
-body.lp-tahun-baru .pwa-header--ny .pwa-header__title,
-body.lp-tahun-baru .pwa-header--ny .pwa-header__theme {
-    color: #fff;
-}
-
-body.lp-tahun-baru .catalog-shop--ny .catalog-shop__head {
-    margin-bottom: 8px;
-    align-items: center;
-}
-
-body.lp-tahun-baru .catalog-shop--ny .catalog-shop__title {
-    font-size: 0.92rem;
-}
-
-body.lp-tahun-baru .catalog-shop--ny .catalog-shop .refresh-btn {
-    width: 32px;
-    height: 32px;
-    font-size: 1rem;
-}
-
-body.lp-tahun-baru .catalog-shop--ny .price-list {
-    display: grid !important;
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-    gap: 8px !important;
-}
-
-body.lp-tahun-baru .catalog-shop--ny .price-card {
-    display: flex !important;
-    flex-direction: column !important;
-    grid-template-columns: unset !important;
-    align-items: stretch !important;
-    text-align: left;
-    padding: 10px !important;
-    gap: 0 !important;
-    border-radius: 12px !important;
-}
-
-body.lp-tahun-baru .catalog-shop--ny .price-left {
-    flex-direction: row !important;
-    align-items: center !important;
-    text-align: left !important;
-    gap: 8px !important;
-    min-width: 0;
-}
-
-body.lp-tahun-baru .catalog-shop--ny .price-icon {
-    width: 34px !important;
-    height: 34px !important;
-    font-size: 0.9rem !important;
-    border-radius: 8px !important;
-    background: #f0ecf8 !important;
-    color: #5b4f8a !important;
-}
-
-body.lp-tahun-baru .catalog-shop--ny .price-info {
-    min-width: 0;
-    flex: 1;
-}
-
-body.lp-tahun-baru .catalog-shop--ny .price-title {
-    font-size: 0.8rem !important;
-    line-height: 1.25 !important;
-    font-weight: 600 !important;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-}
-
-body.lp-tahun-baru .catalog-shop--ny .price-duration {
-    font-size: 0.65rem !important;
-    line-height: 1.2;
-    margin-top: 1px;
-    opacity: 0.7;
-}
-
-body.lp-tahun-baru .catalog-shop--ny .price-right {
-    display: flex !important;
-    flex-direction: row !important;
-    align-items: center !important;
-    justify-content: space-between !important;
-    gap: 8px !important;
-    max-width: 100% !important;
-    width: 100% !important;
-    margin-top: 8px !important;
-    padding-top: 8px !important;
-    border-top: 1px solid rgba(91, 79, 138, 0.1);
-}
-
-body.lp-tahun-baru .catalog-shop--ny .price-amount {
-    color: #5b4f8a;
-    font-size: 0.88rem !important;
-    font-weight: 800 !important;
-    line-height: 1.2;
-    white-space: nowrap;
-}
-
-body.lp-tahun-baru .catalog-shop--ny .price-cta {
-    width: auto !important;
-    flex-shrink: 0;
-    padding: 6px 11px !important;
-    font-size: 0.62rem !important;
-    font-weight: 700 !important;
-    letter-spacing: 0.02em;
-    text-align: center;
-    border-radius: 8px !important;
-    background: #c4a35a;
-    color: #1a1610;
-    border: none;
-}
-
-@media (max-width: 380px) {
-    body.lp-tahun-baru .catalog-shop--ny .price-list {
-        grid-template-columns: 1fr !important;
-    }
-
-    body.lp-tahun-baru .catalog-shop--ny .price-cta {
-        padding: 7px 14px !important;
-    }
-}
-

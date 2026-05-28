@@ -3,79 +3,98 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="theme-color" content="#C41E3A">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#13737D">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title id="pageTitle">WiFi Login</title>
-    <script type="text/javascript" src="https://app.midtrans.com/snap/snap.js"></script>
-    <script src="qrcode.min.js"></script>
+    <script src="qr.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
 
-<body class="lp-kemerdekaan">
+<body>
     <div class="loading" id="loadingSpinner">
         <div class="spinner"></div>
     </div>
 
-    <div class="lp-page pwa-app pwa-app--id">
-        <div class="pwa-stripe" aria-hidden="true"></div>
+    <div class="header">
+        <div class="logo">WiFi Login</div>
+    </div>
 
-        <header class="pwa-header pwa-header--id">
-            <div class="pwa-header__row">
-                <span class="pwa-header__badge">ID</span>
-                <div class="pwa-header__text">
-                    <section class="welcome-section" id="welcomeSection">
-                        <h1 class="pwa-header__title company-name">Memuat informasi perusahaan...</h1>
-                        <p class="pwa-header__theme">Kemerdekaan · 17 Agustus</p>
-                        <div class="contact-info" hidden aria-hidden="true"></div>
-                    </section>
-                </div>
-            </div>
-        </header>
+    <div class="welcome-section" id="welcomeSection">
+        <div class="company-name">Memuat informasi perusahaan...</div>
+        <div class="contact-info">Voucher Internet • Aktivasi Otomatis</div>
+    </div>
 
-        <main class="pwa-main">
-            <section class="pwa-hero pwa-hero--id">
-                <section class="banner-slider banner-slider--single" id="bannerSlider" aria-label="Banner">
-                    <div class="banner-viewport">
-                        <div class="banner-track">
-                            <figure class="banner-slide is-active">
-                                <img src="kemerdekaan.webp" alt="Dirgahayu Indonesia">
-                            </figure>
-                        </div>
-                    </div>
-                </section>
-            </section>
+    <!-- MASUKAN TAG GAMBAR DI SINI -->
+    <!-- <div class="welcome-section">
+        <img src="logo.png" alt="" style="display:block; max-width:250px; width:100%; margin:0 auto;">
+    </div> -->
 
-            <div id="packageInfoContainer"></div>
-
+    <div class="container">
+        <div class="content">
             <div id="autoLoginMessage" class="auto-login-message">
                 <div style="font-size: 1.2rem; margin-bottom: 5px;">✅ QR Code Berhasil Dipindai!</div>
                 <div>Login otomatis dalam <span class="countdown" id="autoLoginCountdown">3</span> detik...</div>
             </div>
 
-            <section class="voucher-section pwa-card pwa-card--login">
-                <p class="pwa-section-label">Masuk ke jaringan</p>
-                <div class="login-tabs pwa-tabs pwa-tabs--id">
+            <div class="voucher-section">
+                <div class="login-tabs">
                     <button type="button" class="login-tab-button active" data-target="voucherTab"
-                        onclick="openLoginTab('voucherTab', this)">Voucher</button>
+                        onclick="openLoginTab('voucherTab', this)">
+                        Kode Voucher
+                    </button>
                     <button type="button" class="login-tab-button" data-target="userPassTab"
-                        onclick="openLoginTab('userPassTab', this)">Akun</button>
+                        onclick="openLoginTab('userPassTab', this)">
+                        User Password
+                    </button>
                 </div>
                 <div id="voucherTab" class="login-tab-content active">
                     $(if error)
-                    <div class="notice pwa-notice router-notice">
+                    <div class="notice" style="
+                    color: #721c24; 
+                    background-color: #f8d7da; 
+                    border: 1px solid #f5c6cb; 
+                    border-radius: 10px; 
+                    padding: 10px;
+                    margin: 15px auto; 
+                    font-size: 16px;
+                    text-align: center;
+                    max-width: 500px;
+                    position: relative;
+                ">
                         $(error)
-                        <button type="button" class="close-btn" onclick="this.parentElement.style.display='none'" aria-label="Tutup">&times;</button>
+                        <button type="button" class="close-btn" onclick="this.parentElement.style.display='none'" style="
+                        position: absolute;
+                        top: 50%;
+                        right: 12px;
+                        transform: translateY(-50%);
+                        background: transparent;
+                        border: none;
+                        font-size: 20px;
+                        font-weight: bold;
+                        color: #721c24;
+                        cursor: pointer;
+                        padding: 0;
+                        width: 24px;
+                        height: 24px;
+                        line-height: 1;
+                        border-radius: 50%;
+                        transition: background-color 0.2s;
+                    ">
+                            &times;
+                        </button>
                     </div>
                     $(endif)
                     <div id="alertContainer" class="alert-container"></div>
                     <form autocomplete="off" name="loginvoucher" action="$(link-login-only)" method="post">
                         <div class="input-wrapper">
-                            <input type="text" name="username" required placeholder="Kode voucher" id="kodeVoucher">
+                            <input type="text" name="username" required placeholder="Masukkan Voucher" id="kodeVoucher"
+                                style="font-size: 20px; padding: 20px; height: 60px; width: 100%;">
                             <input type="hidden" name="password" id="password">
                         </div>
-                        <button type="button" class="btn-primary" onclick="submitVoucher()" id="submitVoucherBtn">Masuk ke WiFi</button>
+                        <button type="button" class="btn-primary" onclick="submitVoucher()" id="submitVoucherBtn"
+                            style="font-size: 20px; padding: 18px 40px;">Masuk</button>
                     </form>
                 </div>
 
@@ -85,26 +104,46 @@
                         <input type="hidden" name="popup" value="true">
 
                         <div class="input-wrapper">
-                            <input type="text" id="userLogin" name="username_display" required placeholder="Username">
+                            <input type="text" id="userLogin" name="username_display" required
+                                placeholder="Masukkan Username"
+                                style="font-size: 18px; padding: 16px; height: 52px; width: 100%;">
                         </div>
-                        <div class="input-wrapper">
-                            <input type="password" id="userPassword" name="password_display" required placeholder="Password">
+                        <div class="input-wrapper" style="margin-top: 10px;">
+                            <input type="password" id="userPassword" name="password_display" required
+                                placeholder="Masukkan Password"
+                                style="font-size: 18px; padding: 16px; height: 52px; width: 100%;">
                         </div>
+
                         <input type="hidden" name="username">
                         <input type="hidden" name="password">
-                        <button type="button" class="btn-primary" onclick="submitUserPassword()" id="submitUserPassBtn">Masuk ke WiFi</button>
+
+                        <button type="button" class="btn-primary" onclick="submitUserPassword()"
+                            id="submitUserPassBtn" style="font-size: 20px; padding: 18px 40px;">
+                            Masuk
+                        </button>
                     </form>
                 </div>
-            </section>
+            </div>
 
-            <section class="price-section catalog-shop catalog-shop--id" id="priceSection">
-                <div class="catalog-shop__head">
-                    <div>
-                        <span class="catalog-shop__label">Paket resmi</span>
-                        <h3 class="catalog-shop__title">Beli voucher</h3>
-                    </div>
-                    <button type="button" class="refresh-btn" onclick="loadVouchers()" title="Refresh">↻</button>
+            <div class="menu-section">
+                <div class="menu-card" onclick="openExternalQRScanner()">
+                    <div class="menu-card-icon">📱</div>
+                    <h4>Scan<br>QR Code</h4>
                 </div>
+
+                <div class="menu-card whatsapp-card" onclick="openModal('adminModal')">
+                    <div class="menu-card-icon">💬</div>
+                    <h4>Hubungi<br>Admin</h4>
+                </div>
+            </div>
+
+            <div id="packageInfoContainer"></div>
+            <div class="price-section" id="priceSection">
+                <h3>
+                    📋 Daftar Harga Voucher
+                    <button class="refresh-btn" onclick="loadVouchers()" title="Refresh voucher">🔄</button>
+                </h3>
+
                 <div class="voucher-scroll-container">
                     <div class="price-list" id="voucherList">
                         <div class="price-card">
@@ -115,36 +154,18 @@
                                     <div class="price-duration">Harap tunggu</div>
                                 </div>
                             </div>
-                            <div class="price-right"><span class="price-amount">···</span><span class="price-cta">Beli</span></div>
+                            <div class="price-right">
+                                Loading...
+                            </div>
                         </div>
                     </div>
                 </div>
-            </section>
-        </main>
+            </div>
+        </div>
+    </div>
 
-        <nav class="pwa-dock menu-section" aria-label="Menu bantuan">
-            <button type="button" class="pwa-dock__item menu-card" onclick="openExternalQRScanner()">
-                <span class="pwa-dock__icon-wrap" aria-hidden="true">
-                    <svg class="pwa-dock__svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4z"/>
-                        <path d="M14 14h2v2h-2zM18 14h2v6h-2zM14 18h6v2h-6z"/>
-                    </svg>
-                </span>
-                <span class="pwa-dock__label">Pindai QR</span>
-            </button>
-            <button type="button" class="pwa-dock__item menu-card whatsapp-card" onclick="openModal('adminModal')">
-                <span class="pwa-dock__icon-wrap pwa-dock__icon-wrap--admin" aria-hidden="true">
-                    <svg class="pwa-dock__svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"/>
-                    </svg>
-                </span>
-                <span class="pwa-dock__label">Admin</span>
-            </button>
-        </nav>
-
-        <footer class="footer pwa-foot">
-            Support by <a href="http://billinghub.id/" target="_blank" rel="noopener">billinghub.id</a>
-        </footer>
+    <div class="footer">
+        Support by: <a href="http://billinghub.id/" target="_blank" rel="noopener">billinghub.id</a>
     </div>
 
     <div class="modal" id="adminModal">
@@ -463,13 +484,27 @@
         }
     </script>
 
-    <script>
-        document.querySelectorAll('.router-notice').forEach(function (el) {
-            if (/\$\(/.test(el.textContent)) el.style.display = 'none';
-        });
-    </script>
     <script src="md5.js"></script>
-    <script src="billinghub.js"></script>
+    <script>
+        (function () {
+            function supportsModernScript() {
+                try {
+                    if (!window.fetch || !window.Promise || !window.URLSearchParams) {
+                        return false;
+                    }
+                    new Function("const a = 1; let b = 2; return `${a + b}`;");
+                    new Function("return (async function(){ return 1; });");
+                    return true;
+                } catch (e) {
+                    return false;
+                }
+            }
+
+            var script = document.createElement("script");
+            script.src = supportsModernScript() ? "billinghub.js" : "billinghub.legacy.js";
+            document.body.appendChild(script);
+        })();
+    </script>
 </body>
 
 </html>
