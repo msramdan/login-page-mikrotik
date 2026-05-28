@@ -17,8 +17,35 @@ body.dark .auto-login-message {
 
 .auto-login-message .countdown {
     font-weight: bold;
-    color: var(--secondary);
+    color: #28a745;
+    color: var(--secondary, #28a745);
     font-size: 1.1rem;
+}
+
+.auto-login-actions {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-box-orient: horizontal;
+    -webkit-flex-direction: row;
+    flex-direction: row;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.auto-login-actions__btn {
+    -webkit-box-flex: 1;
+    -webkit-flex: 1 1 0;
+    flex: 1 1 0;
+    width: 48%;
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+#autoLoginConfirmModal .voucher-details {
+    background: #f0f7f8;
+    border: 1px solid #c5dde0;
+    color: #333333;
 }
 
 /* Style untuk info paket */

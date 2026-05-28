@@ -381,7 +381,7 @@
                     <p class="info-text">
                         Kami menemukan kode voucher dari login sebelumnya:
                         <br>
-                        <strong style="font-size: 1.2rem; color: var(--primary);" id="savedVoucherCode">XXXXXX</strong>
+                        <strong style="font-size: 1.2rem; color: #13737d;" id="savedVoucherCode">XXXXXX</strong>
                     </p>
                     <p class="info-text" style="margin-top: 10px; font-size: 0.9rem;">
                         Apakah Anda ingin melanjutkan login dengan kode voucher ini?
@@ -391,12 +391,13 @@
                         <!-- Detail voucher akan dimuat di sini -->
                     </div>
 
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px;">
-                        <button class="btn-primary" onclick="useNewVoucher()" style="background: var(--danger);">
+                    <div class="auto-login-actions">
+                        <button type="button" class="btn-primary auto-login-actions__btn" onclick="useNewVoucher()"
+                            style="background: #dc3545; color: #ffffff;">
                             Gunakan Voucher Baru
                         </button>
-                        <button class="btn-primary" onclick="confirmAutoLogin()" style="background: var(--secondary);"
-                            id="confirmAutoLoginBtn">
+                        <button type="button" class="btn-primary auto-login-actions__btn" onclick="confirmAutoLogin()"
+                            style="background: #28a745; color: #ffffff;" id="confirmAutoLoginBtn">
                             Ya, Lanjutkan Login
                         </button>
                     </div>

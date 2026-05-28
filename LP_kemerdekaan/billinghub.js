@@ -401,13 +401,70 @@ function checkAutoLoginFromUrl() {
 // FUNGSI LOCALSTORAGE (Hanya untuk paket Silver ke atas)
 // ==============================
 
-function saveVoucherToStorage(voucherCode) {
-  // Hanya simpan ke localStorage jika paket Silver ke atas (paket_id >= 2)
-  // if (currentPackageId === null || currentPackageId < 2) {
-  //   console.log("Paket Bronze/Free, skip menyimpan ke localStorage");
-  //   return;
-  // }
+const WIFI_VOUCHER_STORAGE_KEY = "wifi_voucher";
 
+function storageSetItem(key, value) {
+  try {
+    if (window.localStorage) {
+      localStorage.setItem(key, value);
+      return true;
+    }
+  } catch (e1) {
+    /* private mode / quota */
+  }
+  try {
+    const exp = new Date();
+    exp.setTime(exp.getTime() + 30 * 24 * 60 * 60 * 1000);
+    document.cookie =
+      encodeURIComponent(key) +
+      "=" +
+      encodeURIComponent(value) +
+      ";expires=" +
+      exp.toUTCString() +
+      ";path=/";
+    return true;
+  } catch (e2) {
+    return false;
+  }
+}
+
+function storageGetItem(key) {
+  try {
+    if (window.localStorage) {
+      const fromLs = localStorage.getItem(key);
+      if (fromLs) return fromLs;
+    }
+  } catch (e1) {
+    /* ignore */
+  }
+  const cookies = document.cookie ? document.cookie.split(";") : [];
+  const encKey = encodeURIComponent(key) + "=";
+  for (let i = 0; i < cookies.length; i++) {
+    let c = cookies[i];
+    while (c.charAt(0) === " ") c = c.substring(1);
+    if (c.indexOf(encKey) === 0) {
+      return decodeURIComponent(c.substring(encKey.length));
+    }
+  }
+  return null;
+}
+
+function storageRemoveItem(key) {
+  try {
+    if (window.localStorage) localStorage.removeItem(key);
+  } catch (e1) {
+    /* ignore */
+  }
+  try {
+    document.cookie =
+      encodeURIComponent(key) + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/";
+  } catch (e2) {
+    /* ignore */
+  }
+}
+
+function saveVoucherToStorage(voucherCode) {
+  if (!voucherCode) return;
   try {
     const voucherData = {
       code: voucherCode,
@@ -415,48 +472,35 @@ function saveVoucherToStorage(voucherCode) {
       companyToken: API_CONFIG.token,
       packageId: currentPackageId,
     };
-    localStorage.setItem("wifi_voucher", JSON.stringify(voucherData));
-    console.log("✅ Voucher saved to localStorage:", voucherCode);
+    storageSetItem(WIFI_VOUCHER_STORAGE_KEY, JSON.stringify(voucherData));
+    console.log("✅ Voucher saved to storage:", voucherCode);
   } catch (error) {
-    console.error("Error saving to localStorage:", error);
+    console.error("Error saving voucher to storage:", error);
   }
 }
 
 function removeVoucherFromStorage() {
-  try {
-    localStorage.removeItem("wifi_voucher");
-    console.log("🗑️ Voucher removed from localStorage");
-  } catch (error) {
-    console.error("Error removing from localStorage:", error);
-  }
+  storageRemoveItem(WIFI_VOUCHER_STORAGE_KEY);
+  console.log("🗑️ Voucher removed from storage");
 }
 
 function getSavedVoucher() {
-  // Hanya cek localStorage jika paket Silver ke atas
-  // if (currentPackageId === null || currentPackageId < 2) {
-  //   console.log("Paket Bronze/Free, skip auto login");
-  //   return null;
-  // }
-
   try {
-    const savedData = localStorage.getItem("wifi_voucher");
+    const savedData = storageGetItem(WIFI_VOUCHER_STORAGE_KEY);
     if (!savedData) return null;
 
     const voucherData = JSON.parse(savedData);
 
-    // Cek apakah token perusahaan sama
     if (voucherData.companyToken !== API_CONFIG.token) {
       removeVoucherFromStorage();
       return null;
     }
 
-    // Cek apakah paket_id masih sama
     if (voucherData.packageId !== currentPackageId) {
       removeVoucherFromStorage();
       return null;
     }
 
-    // Cek apakah voucher masih valid (30 hari)
     const thirtyDaysAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
     if (voucherData.timestamp < thirtyDaysAgo) {
       removeVoucherFromStorage();
@@ -465,7 +509,7 @@ function getSavedVoucher() {
 
     return voucherData.code;
   } catch (error) {
-    console.error("Error reading localStorage:", error);
+    console.error("Error reading storage:", error);
     return null;
   }
 }
@@ -997,7 +1041,7 @@ function renderVouchers() {
       (voucher) => `
         <div class="price-card" onclick="showBuyModal(${voucher.id})">
             <div class="price-left">
-                <div class="price-icon price-icon--ticket"><span class="price-icon__label">V</span></div>
+                <div class="price-icon">🎫</div>
                 <div class="price-info">
                     <div class="price-title" title="${voucher.nama_voucher}">${voucher.nama_voucher}</div>
                     <div class="price-duration" title="${voucher.batas_waktu}">${voucher.batas_waktu}</div>
@@ -1704,13 +1748,51 @@ function toggleTheme() {
   /* mode gelap dinonaktifkan */
 }
 
+function applyModalLegacyPaint(modal) {
+  if (!modal) return;
+  modal.style.display = "block";
+  modal.style.position = "fixed";
+  modal.style.top = "0";
+  modal.style.left = "0";
+  modal.style.width = "100%";
+  modal.style.height = "100%";
+  modal.style.zIndex = "10000";
+  modal.style.backgroundColor = "rgba(0,0,0,0.72)";
+  modal.style.overflowY = "auto";
+  modal.style.textAlign = "center";
+  const content = modal.querySelector(".modal-content");
+  if (content) {
+    content.style.backgroundColor = "#ffffff";
+    content.style.opacity = "1";
+    content.style.display = "inline-block";
+    content.style.textAlign = "left";
+    content.style.verticalAlign = "middle";
+    content.style.margin = "16px auto";
+    content.style.maxWidth = "500px";
+    content.style.width = "100%";
+    content.style.borderRadius = "14px";
+    content.style.boxShadow = "0 12px 28px rgba(0,0,0,0.35)";
+  }
+  const header = modal.querySelector(".modal-header");
+  if (header) header.style.backgroundColor = "#ffffff";
+  const body = modal.querySelector(".modal-body");
+  if (body) body.style.backgroundColor = "#ffffff";
+}
+
 function openModal(modalId) {
-  document.getElementById(modalId).classList.add("active");
+  const modal = document.getElementById(modalId);
+  if (!modal) return;
+  modal.classList.add("active");
+  applyModalLegacyPaint(modal);
   document.body.style.overflow = "hidden";
 }
 
 function closeModal(modalId) {
-  document.getElementById(modalId).classList.remove("active");
+  const modal = document.getElementById(modalId);
+  if (modal) {
+    modal.classList.remove("active");
+    modal.style.display = "none";
+  }
   document.body.style.overflow = "";
 
   if (modalId === "buyVoucherModal") {
@@ -1742,29 +1824,18 @@ function initializeApp() {
   // Ini penting: hapus voucher dari localStorage jika ada error
   const hasError = checkAndCleanErrorOnLoad();
 
-  // Cek auto login dari URL parameter (hasil scan)
-  checkAutoLoginFromUrl();
+  const autoLoginFromUrl = checkAutoLoginFromUrl();
 
-  // Load company info dan vouchers
-  loadCompanyInfo();
-  loadVouchers();
-
-  // AUTO LOGIN: Cek apakah ada voucher tersimpan (hanya untuk paket Silver ke atas)
-  // TAPI SKIP jika ada error
-  setTimeout(() => {
-    if (hasError) {
-      console.log("ℹ️ Skipping auto login because error was detected on load");
-      return;
-    }
-    
+  loadCompanyInfo().then(function () {
+    if (hasError || autoLoginFromUrl) return;
     const savedVoucher = getSavedVoucher();
     if (savedVoucher) {
       console.log("🔍 Auto login detected. Saved voucher:", savedVoucher);
       showAutoLoginConfirm(savedVoucher);
-    } else {
-      console.log("ℹ️ No saved voucher found for auto login");
     }
-  }, 1500);
+  });
+
+  loadVouchers();
 
   // Auto refresh vouchers setiap 5 menit
   setInterval(loadVouchers, 5 * 60 * 1000);

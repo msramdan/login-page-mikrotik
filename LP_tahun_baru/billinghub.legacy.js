@@ -17,6 +17,9 @@
   var qrinOrderKode = null;
   var qrinActivePaymentModal = "qrinPaymentModal";
   var qrinCheckPaymentBusy = false;
+  var autoLoginTimer = null;
+  var savedVoucherForAutoLogin = null;
+  var WIFI_VOUCHER_STORAGE_KEY = "wifi_voucher";
 
   function withHttpFallback(url) {
     if (typeof url !== "string") return url;
@@ -866,7 +869,7 @@
         '<div class="price-card" onclick="showBuyModal(' +
         String(v.id || 0) +
         ')">' +
-        '<div class="price-left"><div class="price-icon price-icon--ticket"><span class="price-icon__label">V</span></div><div class="price-info">' +
+        '<div class="price-left"><div class="price-icon">🎫</div><div class="price-info">' +
         '<div class="price-title">' +
         String(v.nama_voucher || "-") +
         "</div>" +
@@ -875,12 +878,12 @@
         "</div></div></div>" +
         '<div class="price-right"><span class="price-amount">' +
         String(v.harga || "-") +
-        '</span><span class="price-cta">Beli paket</span></div></div>';
+        "</span></div></div>";
     }
     list.innerHTML = html;
   }
 
-  function loadCompanyInfo() {
+  function loadCompanyInfo(done) {
     xhrJson("GET", API_CONFIG.baseUrl + "/v1/company/" + API_CONFIG.token, null, function (err, data) {
       if (!err && data && data.success && data.data) {
         companyData = data.data;
@@ -888,6 +891,7 @@
       }
       updateCompanyDisplay();
       updateAdminContactInfo();
+      if (typeof done === "function") done();
     });
   }
 
@@ -913,7 +917,288 @@
     });
   }
 
+  function getUrlParam(name) {
+    var search = window.location.search;
+    if (!search || search.length < 2) return null;
+    var parts = search.substring(1).split("&");
+    for (var i = 0; i < parts.length; i++) {
+      var pair = parts[i].split("=");
+      var key = pair[0] ? decodeURIComponent(pair[0]) : "";
+      if (key === name) {
+        return pair.length > 1 ? decodeURIComponent(pair[1].replace(/\+/g, " ")) : "";
+      }
+    }
+    return null;
+  }
+
+  function storageSetItem(key, value) {
+    try {
+      if (window.localStorage) {
+        localStorage.setItem(key, value);
+        return true;
+      }
+    } catch (e1) {}
+    try {
+      var exp = new Date();
+      exp.setTime(exp.getTime() + 30 * 24 * 60 * 60 * 1000);
+      document.cookie =
+        encodeURIComponent(key) +
+        "=" +
+        encodeURIComponent(value) +
+        ";expires=" +
+        exp.toUTCString() +
+        ";path=/";
+      return true;
+    } catch (e2) {}
+    return false;
+  }
+
+  function storageGetItem(key) {
+    try {
+      if (window.localStorage) {
+        var fromLs = localStorage.getItem(key);
+        if (fromLs) return fromLs;
+      }
+    } catch (e1) {}
+    var cookies = document.cookie ? document.cookie.split(";") : [];
+    var encKey = encodeURIComponent(key) + "=";
+    for (var i = 0; i < cookies.length; i++) {
+      var c = cookies[i];
+      while (c.charAt(0) === " ") c = c.substring(1);
+      if (c.indexOf(encKey) === 0) {
+        return decodeURIComponent(c.substring(encKey.length));
+      }
+    }
+    return null;
+  }
+
+  function storageRemoveItem(key) {
+    try {
+      if (window.localStorage) localStorage.removeItem(key);
+    } catch (e1) {}
+    try {
+      document.cookie =
+        encodeURIComponent(key) + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/";
+    } catch (e2) {}
+  }
+
+  function saveVoucherToStorage(voucherCode) {
+    if (!voucherCode) return;
+    var voucherData = {
+      code: String(voucherCode),
+      timestamp: new Date().getTime(),
+      companyToken: API_CONFIG.token,
+      packageId: currentPackageId,
+    };
+    try {
+      storageSetItem(WIFI_VOUCHER_STORAGE_KEY, JSON.stringify(voucherData));
+    } catch (e) {}
+  }
+
+  function removeVoucherFromStorage() {
+    storageRemoveItem(WIFI_VOUCHER_STORAGE_KEY);
+  }
+
+  function getSavedVoucher() {
+    var savedData = storageGetItem(WIFI_VOUCHER_STORAGE_KEY);
+    if (!savedData) return null;
+    try {
+      var voucherData = JSON.parse(savedData);
+      if (!voucherData || !voucherData.code) return null;
+      if (voucherData.companyToken !== API_CONFIG.token) {
+        removeVoucherFromStorage();
+        return null;
+      }
+      if (voucherData.packageId !== currentPackageId) {
+        removeVoucherFromStorage();
+        return null;
+      }
+      var thirtyDaysAgo = new Date().getTime() - 30 * 24 * 60 * 60 * 1000;
+      if (!voucherData.timestamp || voucherData.timestamp < thirtyDaysAgo) {
+        removeVoucherFromStorage();
+        return null;
+      }
+      return String(voucherData.code);
+    } catch (e) {
+      removeVoucherFromStorage();
+      return null;
+    }
+  }
+
+  function checkAndCleanErrorOnLoad() {
+    var hasErrorParam = !!getUrlParam("error");
+    var errorNotice = document.querySelector
+      ? document.querySelector(".notice")
+      : null;
+    var hasErrorNotice = !!errorNotice;
+    var hasMikrotikErrorText = false;
+    if (errorNotice && errorNotice.textContent) {
+      var errorText = String(errorNotice.textContent).toLowerCase();
+      var keywords = [
+        "already logged in",
+        "invalid",
+        "not enough",
+        "voucher not found",
+        "expired",
+        "limit reached",
+        "login failed",
+      ];
+      for (var i = 0; i < keywords.length; i++) {
+        if (errorText.indexOf(keywords[i]) !== -1) {
+          hasMikrotikErrorText = true;
+          break;
+        }
+      }
+    }
+    if (hasErrorParam || hasErrorNotice || hasMikrotikErrorText) {
+      removeVoucherFromStorage();
+      if (hasErrorParam && window.history && window.history.replaceState) {
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
+      return true;
+    }
+    return false;
+  }
+
+  function checkAutoLoginFromUrl() {
+    var voucherCode = getUrlParam("voucher");
+    if (!voucherCode || voucherCode.length < 6) return false;
+
+    var msg = byId("autoLoginMessage");
+    var input = byId("kodeVoucher");
+    var countdownEl = byId("autoLoginCountdown");
+    if (input) input.value = voucherCode;
+    if (msg) msg.style.display = "block";
+
+    var countdown = 3;
+    if (countdownEl) countdownEl.textContent = String(countdown);
+
+    if (autoLoginTimer) clearInterval(autoLoginTimer);
+    autoLoginTimer = setInterval(function () {
+      countdown--;
+      if (countdownEl) countdownEl.textContent = String(countdown);
+      if (countdown <= 0) {
+        clearInterval(autoLoginTimer);
+        autoLoginTimer = null;
+        submitVoucher();
+      }
+    }, 1000);
+
+    if (window.history && window.history.replaceState) {
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+    return true;
+  }
+
+  function showAutoLoginConfirm(voucherCode) {
+    if (!voucherCode) return;
+    savedVoucherForAutoLogin = String(voucherCode);
+
+    var codeEl = byId("savedVoucherCode");
+    if (codeEl) codeEl.textContent = savedVoucherForAutoLogin;
+
+    var confirmBtn = byId("confirmAutoLoginBtn");
+    if (confirmBtn) {
+      confirmBtn.disabled = false;
+      confirmBtn.innerHTML = "Ya, Lanjutkan Login";
+    }
+
+    var details = byId("voucherDetails");
+    if (details) {
+      details.style.display = "none";
+      details.innerHTML = "";
+    }
+
+    openModal("autoLoginConfirmModal");
+  }
+
+  function proceedWithAutoLogin(voucherCode) {
+    closeModal("autoLoginConfirmModal");
+    var input = byId("kodeVoucher");
+    if (input) input.value = voucherCode;
+    showAlert("Voucher valid! Melakukan login...", "success");
+    setTimeout(function () {
+      submitVoucher();
+    }, 800);
+  }
+
+  function confirmAutoLogin() {
+    var voucherCode = savedVoucherForAutoLogin;
+    if (!voucherCode) {
+      showAlert("Kode voucher tidak ditemukan", "danger");
+      closeModal("autoLoginConfirmModal");
+      return;
+    }
+
+    var confirmBtn = byId("confirmAutoLoginBtn");
+    if (confirmBtn) {
+      confirmBtn.disabled = true;
+      confirmBtn.innerHTML = "Memproses...";
+    }
+
+    xhrJson(
+      "POST",
+      API_CONFIG.baseUrl + "/v1/check-voucher/" + API_CONFIG.token,
+      { voucher_code: voucherCode },
+      function (err, result) {
+        if (err || !result || !result.success) {
+          var details = byId("voucherDetails");
+          if (details) {
+            details.style.display = "block";
+            details.innerHTML =
+              '<div style="color:#dc3545;font-size:0.9rem;"><strong>' +
+              String((result && result.message) || "Voucher tidak valid") +
+              "</strong></div>";
+          }
+          if (confirmBtn) {
+            confirmBtn.disabled = false;
+            confirmBtn.innerHTML = "Ya, Lanjutkan Login";
+          }
+          removeVoucherFromStorage();
+          return;
+        }
+
+        var data = result.data || {};
+        if (data.was_active && data.removed_count > 0) {
+          var detailsActive = byId("voucherDetails");
+          if (detailsActive) {
+            detailsActive.style.display = "block";
+            detailsActive.innerHTML =
+              '<div style="color:#856404;font-size:0.9rem;">Menghapus ' +
+              String(data.removed_count) +
+              " sesi aktif sebelumnya...</div>";
+          }
+          setTimeout(function () {
+            proceedWithAutoLogin(voucherCode);
+          }, 1500);
+        } else {
+          proceedWithAutoLogin(voucherCode);
+        }
+      }
+    );
+  }
+
+  function useNewVoucher() {
+    removeVoucherFromStorage();
+    savedVoucherForAutoLogin = null;
+    var input = byId("kodeVoucher");
+    if (input) {
+      input.value = "";
+      if (input.focus) input.focus();
+    }
+    closeModal("autoLoginConfirmModal");
+    showAlert("Silahkan masukkan kode voucher baru", "info");
+  }
+
   function submitVoucher() {
+    if (autoLoginTimer) {
+      clearInterval(autoLoginTimer);
+      autoLoginTimer = null;
+    }
+
+    var autoMsg = byId("autoLoginMessage");
+    if (autoMsg) autoMsg.style.display = "none";
+
     var input = byId("kodeVoucher");
     var submitBtn = byId("submitVoucherBtn");
     var form = document.forms.loginvoucher;
@@ -944,10 +1229,13 @@
         form.password.value = voucherCode;
       }
 
+      removeVoucherFromStorage();
+      saveVoucherToStorage(voucherCode);
+
       showLoading(true);
       setTimeout(function () {
         form.submit();
-      }, 500);
+      }, 800);
     } catch (e) {
       showAlert("Terjadi kesalahan saat login", "danger");
       if (submitBtn) {
@@ -1070,7 +1358,10 @@
   window.processPurchase = processPurchase;
   window.selectPaymentMethodCard = selectPaymentMethodCard;
   window.qrinCheckPaymentStatus = qrinCheckPaymentStatus;
+  window.confirmAutoLogin = confirmAutoLogin;
+  window.useNewVoucher = useNewVoucher;
 
+  var appInitialized = false;
   function isThemedLandingPage() {
     var body = document.body;
     return body && body.className && body.className.indexOf("lp-") === 0;
@@ -1097,7 +1388,6 @@
     }
   }
 
-  var appInitialized = false;
   function initializeApp() {
     if (appInitialized) return;
     appInitialized = true;
@@ -1115,7 +1405,15 @@
         }
       });
     }
-    loadCompanyInfo();
+    var hasErrorOnLoad = checkAndCleanErrorOnLoad();
+    var autoLoginFromUrl = checkAutoLoginFromUrl();
+
+    loadCompanyInfo(function () {
+      if (!hasErrorOnLoad && !autoLoginFromUrl) {
+        var saved = getSavedVoucher();
+        if (saved) showAutoLoginConfirm(saved);
+      }
+    });
     loadVouchers();
   }
 
