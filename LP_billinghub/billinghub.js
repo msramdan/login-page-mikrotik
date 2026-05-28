@@ -1,10 +1,13 @@
 // ==============================
-// KONFIGURASI API
+// KONFIGURASI API (edit token di config.js)
 // ==============================
-const API_CONFIG = {
-  baseUrl: "https://billinghub.id/api",
-  token: "UQ389HyIcsN0jaicPiXoZSiNIc99Mk27g00gv886ptGFtp6bWkMmk22b6TpPeEnw",
-};
+const API_CONFIG = (function () {
+  const c = window.BILLINGHUB_CONFIG || {};
+  return {
+    baseUrl: c.baseUrl || "https://billinghub.id/api",
+    token: c.token || "",
+  };
+})();
 
 // ==============================
 // STATE GLOBAL

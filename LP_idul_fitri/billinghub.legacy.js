@@ -2,10 +2,13 @@
 (function () {
   "use strict";
 
-  var API_CONFIG = {
-    baseUrl: "https://billinghub.id/api",
-    token: "UQ389HyIcsN0jaicPiXoZSiNIc99Mk27g00gv886ptGFtp6bWkMmk22b6TpPeEnw",
-  };
+  var API_CONFIG = (function () {
+    var c = window.BILLINGHUB_CONFIG || {};
+    return {
+      baseUrl: c.baseUrl || "https://billinghub.id/api",
+      token: c.token || "",
+    };
+  })();
 
   var companyData = null;
   var currentPackageId = 1;
