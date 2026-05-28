@@ -3,7 +3,7 @@
 // ==============================
 const API_CONFIG = {
   baseUrl: "https://billinghub.id/api",
-  token: "XXXX",
+  token: "UQ389HyIcsN0jaicPiXoZSiNIc99Mk27g00gv886ptGFtp6bWkMmk22b6TpPeEnw",
 };
 
 // ==============================
@@ -23,6 +23,58 @@ let paymentMethodsList = [];
 
 // Metode yang dipilih user (code saluran)
 let selectedPaymentMethodCode = null;
+let apiFallbackTried = false;
+let snapScriptLoadingPromise = null;
+
+function withHttpFallback(url) {
+  if (typeof url !== "string") return url;
+  if (url.indexOf("https://") === 0) return "http://" + url.substring(8);
+  return url;
+}
+
+async function fetchWithApiFallback(url, options) {
+  try {
+    return await fetch(url, options);
+  } catch (err) {
+    const canRetry = !apiFallbackTried;
+    if (!canRetry) throw err;
+    const fallbackUrl = withHttpFallback(url);
+    if (fallbackUrl === url) throw err;
+    apiFallbackTried = true;
+    return fetch(fallbackUrl, options);
+  }
+}
+
+function ensureSnapScriptLoaded() {
+  if (window.snap && typeof window.snap.pay === "function") {
+    return Promise.resolve();
+  }
+  if (snapScriptLoadingPromise) return snapScriptLoadingPromise;
+
+  snapScriptLoadingPromise = new Promise((resolve, reject) => {
+    const existing = document.querySelector('script[data-midtrans-snap="1"]');
+    if (existing) {
+      existing.addEventListener("load", () => resolve());
+      existing.addEventListener("error", () =>
+        reject(new Error("Gagal memuat Midtrans Snap"))
+      );
+      return;
+    }
+
+    const script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src = "https://app.midtrans.com/snap/snap.js";
+    script.setAttribute("data-midtrans-snap", "1");
+    script.onload = () => resolve();
+    script.onerror = () => reject(new Error("Gagal memuat Midtrans Snap"));
+    document.head.appendChild(script);
+  }).catch((err) => {
+    snapScriptLoadingPromise = null;
+    throw err;
+  });
+
+  return snapScriptLoadingPromise;
+}
 
 function isQrinPaymentGateway() {
   const g = companyData && companyData.payment_gateway;
@@ -30,7 +82,7 @@ function isQrinPaymentGateway() {
 }
 
 function escapeHtml(str) {
-  return String(str ?? "")
+  return String(str == null ? "" : str)
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
@@ -39,12 +91,19 @@ function escapeHtml(str) {
 
 /** Untuk atribut HTML (mis. src gambar) — jangan encode & agar URL Tripay/Qrin tetap valid */
 function escapeAttr(str) {
-  return String(str ?? "").replace(/"/g, "&quot;");
+  return String(str == null ? "" : str).replace(/"/g, "&quot;");
 }
 
 function methodCustomerCostRaw(m) {
   if (m == null) return "";
-  const v = m.customer_cost ?? m.fee_customer ?? m.customer_fee ?? "";
+  let v = "";
+  if (m.customer_cost != null) {
+    v = m.customer_cost;
+  } else if (m.fee_customer != null) {
+    v = m.fee_customer;
+  } else if (m.customer_fee != null) {
+    v = m.customer_fee;
+  }
   return String(v).trim();
 }
 
@@ -105,9 +164,11 @@ function setQrinOrderFeeSummaryFromPurchase(data) {
   const method = paymentMethodsList.find(
     (m) => String(m.code || m.channel_code || "") === String(selectedPaymentMethodCode || "")
   );
-  const nominal =
-    pickOrderNumericField(data, ["nominal", "amount", "harga"]) ??
-    (Math.round(Number(data.amount)) || 0);
+  const pickedNominal = pickOrderNumericField(data, ["nominal", "amount", "harga"]);
+  let nominal = Math.round(Number(data.amount)) || 0;
+  if (pickedNominal != null) {
+    nominal = pickedNominal;
+  }
 
   let adminRp = pickOrderNumericField(data, [
     "payment_fee",
@@ -118,7 +179,7 @@ function setQrinOrderFeeSummaryFromPurchase(data) {
   if (adminRp == null && method) {
     adminRp = methodFeeAmount(method);
   }
-  adminRp = adminRp ?? 0;
+  adminRp = adminRp == null ? 0 : adminRp;
 
   let totalRp = pickOrderNumericField(data, [
     "total_amount",
@@ -687,7 +748,7 @@ function clearModalAlert() {
 
 async function loadCompanyInfo() {
   try {
-    const response = await fetch(
+    const response = await fetchWithApiFallback(
       `${API_CONFIG.baseUrl}/v1/company/${API_CONFIG.token}`
     );
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
@@ -852,7 +913,7 @@ function copyToClipboard(elementId) {
 async function loadVouchers() {
   showLoading(true);
   try {
-    const response = await fetch(
+    const response = await fetchWithApiFallback(
       `${API_CONFIG.baseUrl}/v1/vouchers/${API_CONFIG.token}`
     );
 
@@ -1123,7 +1184,7 @@ function selectPaymentMethodCard(el) {
     );
     return;
   }
-  const code = m.code || m.channel_code || String(m.id ?? "");
+  const code = m.code || m.channel_code || String(m.id == null ? "" : m.id);
   selectedPaymentMethodCode = code;
   document.querySelectorAll(".tripay-method-card").forEach((node) => {
     node.classList.toggle("selected", node === el);
@@ -1539,7 +1600,22 @@ async function qrinCheckPaymentStatus() {
   }
 }
 
-function openSnapPayment(token) {
+async function openSnapPayment(token) {
+  try {
+    await ensureSnapScriptLoaded();
+  } catch (e) {
+    console.error("Midtrans script error:", e);
+    showAlert("Gagal memuat pembayaran Midtrans. Coba lagi.", "danger");
+    closeModal("successModal");
+    return;
+  }
+
+  if (!window.snap || typeof window.snap.pay !== "function") {
+    showAlert("Midtrans tidak tersedia di perangkat ini.", "danger");
+    closeModal("successModal");
+    return;
+  }
+
   window.snap.pay(token, {
     onSuccess: function (result) {
       console.log("Payment success:", result);
@@ -1623,7 +1699,12 @@ function closeModalOnBackdrop(event, modalId) {
 // ==============================
 // INITIALIZATION
 // ==============================
-document.addEventListener("DOMContentLoaded", () => {
+let appInitialized = false;
+
+function initializeApp() {
+  if (appInitialized) return;
+  appInitialized = true;
+
   console.log("🚀 WiFi Login Page Initialized");
 
   document.body.classList.remove("dark");
@@ -1704,7 +1785,7 @@ document.addEventListener("DOMContentLoaded", () => {
     },
     false
   );
-});
+}
 
 document.addEventListener("gesturestart", function (e) {
   e.preventDefault();
@@ -1720,8 +1801,16 @@ document.addEventListener(
   { passive: false }
 );
 
-document.addEventListener("DOMContentLoaded", function () {
+function applyScrollTweaks() {
   document.documentElement.style.scrollBehavior = "smooth";
   document.body.style.overflowY = "auto";
   document.body.style.webkitOverflowScrolling = "touch";
-});
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initializeApp);
+  document.addEventListener("DOMContentLoaded", applyScrollTweaks);
+} else {
+  initializeApp();
+  applyScrollTweaks();
+}

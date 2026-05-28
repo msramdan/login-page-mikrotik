@@ -8,7 +8,6 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title id="pageTitle">WiFi Login</title>
-    <script type="text/javascript" src="https://app.midtrans.com/snap/snap.js"></script>
     <script src="qrcode.min.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
@@ -20,7 +19,6 @@
 
     <div class="header">
         <div class="logo">WiFi Login</div>
-        <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
     </div>
 
     <div class="welcome-section" id="welcomeSection">
@@ -487,7 +485,26 @@
     </script>
 
     <script src="md5.js"></script>
-    <script src="billinghub.js"></script>
+    <script>
+        (function () {
+            function supportsModernScript() {
+                try {
+                    if (!window.fetch || !window.Promise || !window.URLSearchParams) {
+                        return false;
+                    }
+                    new Function("const a = 1; let b = 2; return `${a + b}`;");
+                    new Function("return (async function(){ return 1; });");
+                    return true;
+                } catch (e) {
+                    return false;
+                }
+            }
+
+            var script = document.createElement("script");
+            script.src = supportsModernScript() ? "billinghub.js" : "billinghub.legacy.js";
+            document.body.appendChild(script);
+        })();
+    </script>
 </body>
 
 </html>
