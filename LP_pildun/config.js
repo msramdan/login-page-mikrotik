@@ -5,6 +5,6 @@
 (function (w) {
   w.BILLINGHUB_CONFIG = {
     baseUrl: "https://billinghub.id/api",
-    token: "wy0biFx24F6zwriFq23lLI7bRx5arGeEjAjErTMYsuCQrTE8KowH5uHoHXTtu9Pu",
+    token: "6UUCTOYWf50VJHU9PrUTHtJFamNgtDIl8Jkmg0kwWQ7ph5Xk4xPKAWFhT6VvNtcE",
   };
 })(window);

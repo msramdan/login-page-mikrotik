@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#1565C0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title id="pageTitle">WiFi Login</title>
+    <script src="qr.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="lp-pildun">
+    <div class="loading" id="loadingSpinner">
+        <div class="spinner"></div>
+    </div>
+
+    <div class="lp-page pwa-app pwa-app--pildun">
+        <div class="pwa-pildun-bar" aria-hidden="true"></div>
+
+        <header class="pwa-header pwa-header--pildun">
+            <div class="pwa-header__row">
+                <span class="pwa-header__icon" aria-hidden="true">⚽</span>
+                <div class="pwa-header__text">
+                    <section class="welcome-section" id="welcomeSection">
+                        <h1 class="pwa-header__title company-name">Memuat informasi perusahaan...</h1>
+                        <p class="pwa-header__theme">Piala Dunia · Satu Dunia, Satu Semangat!</p>
+                        <div class="contact-info" hidden aria-hidden="true"></div>
+                    </section>
+                </div>
+            </div>
+        </header>
+
+        <main class="pwa-main">
+            <section class="pwa-hero pwa-hero--pildun">
+                <section class="banner-slider banner-slider--single" id="bannerSlider" aria-label="Banner Piala Dunia">
+                    <div class="banner-viewport">
+                        <div class="banner-track">
+                            <figure class="banner-slide is-active">
+                                <img src="pildun.jpg" alt="Piala Dunia">
+                            </figure>
+                        </div>
+                    </div>
+                </section>
+            </section>
+
+            <div id="packageInfoContainer"></div>
+
+            <div id="autoLoginMessage" class="auto-login-message">
+                <div style="font-size: 1.2rem; margin-bottom: 5px;">✅ QR Code Berhasil Dipindai!</div>
+                <div>Login otomatis dalam <span class="countdown" id="autoLoginCountdown">3</span> detik...</div>
+            </div>
+
+            <section class="voucher-section pwa-card pwa-card--login">
+                <p class="pwa-section-label">Masuk ke jaringan</p>
+                <div class="login-tabs pwa-tabs pwa-tabs--pildun">
+                    <button type="button" class="login-tab-button active" data-target="voucherTab"
+                        onclick="openLoginTab('voucherTab', this)">Voucher</button>
+                    <button type="button" class="login-tab-button" data-target="userPassTab"
+                        onclick="openLoginTab('userPassTab', this)">Akun</button>
+                </div>
+                <div id="voucherTab" class="login-tab-content active">
+                    $(if error)
+                    <div class="notice pwa-notice router-notice">
+                        $(error)
+                        <button type="button" class="close-btn" onclick="this.parentElement.style.display='none'" aria-label="Tutup">&times;</button>
+                    </div>
+                    $(endif)
+                    <div id="alertContainer" class="alert-container"></div>
+                    <form autocomplete="off" name="loginvoucher" action="$(link-login-only)" method="post">
+                        <div class="input-wrapper">
+                            <input type="text" name="username" required placeholder="Kode voucher" id="kodeVoucher">
+                            <input type="hidden" name="password" id="password">
+                        </div>
+                        <button type="button" class="btn-primary" onclick="submitVoucher()" id="submitVoucherBtn">Masuk ke WiFi</button>
+                    </form>
+                </div>
+
+                <div id="userPassTab" class="login-tab-content">
+                    <form autocomplete="off" name="loginuser" action="$(link-login-only)" method="post">
+                        <input type="hidden" name="dst" value="$(link-orig)">
+                        <input type="hidden" name="popup" value="true">
+
+                        <div class="input-wrapper">
+                            <input type="text" id="userLogin" name="username_display" required placeholder="Username">
+                        </div>
+                        <div class="input-wrapper">
+                            <input type="password" id="userPassword" name="password_display" required placeholder="Password">
+                        </div>
+                        <input type="hidden" name="username">
+                        <input type="hidden" name="password">
+                        <button type="button" class="btn-primary" onclick="submitUserPassword()" id="submitUserPassBtn">Masuk ke WiFi</button>
+                    </form>
+                </div>
+            </section>
+
+            <section class="price-section catalog-shop catalog-shop--pildun" id="priceSection">
+                <div class="catalog-shop__head">
+                    <div>
+                        <span class="catalog-shop__label">Paket resmi</span>
+                        <h3 class="catalog-shop__title">Beli voucher</h3>
+                    </div>
+                    <button type="button" class="refresh-btn" onclick="loadVouchers()" title="Refresh">↻</button>
+                </div>
+                <div class="voucher-scroll-container">
+                    <div class="price-list" id="voucherList">
+                        <div class="price-card">
+                            <div class="price-left">
+                                <div class="price-icon">⏳</div>
+                                <div class="price-info">
+                                    <div class="price-title">Memuat voucher...</div>
+                                    <div class="price-duration">Harap tunggu</div>
+                                </div>
+                            </div>
+                            <div class="price-right"><span class="price-amount">···</span><span class="price-cta">Beli</span></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <nav class="pwa-dock menu-section" aria-label="Menu bantuan">
+            <button type="button" class="pwa-dock__item menu-card" onclick="openExternalQRScanner()">
+                <span class="pwa-dock__icon-wrap" aria-hidden="true">
+                    <svg class="pwa-dock__svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4z"/>
+                        <path d="M14 14h2v2h-2zM18 14h2v6h-2zM14 18h6v2h-6z"/>
+                    </svg>
+                </span>
+                <span class="pwa-dock__label">Pindai QR</span>
+            </button>
+            <button type="button" class="pwa-dock__item menu-card whatsapp-card" onclick="openModal('adminModal')">
+                <span class="pwa-dock__icon-wrap pwa-dock__icon-wrap--admin" aria-hidden="true">
+                    <svg class="pwa-dock__svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"/>
+                    </svg>
+                </span>
+                <span class="pwa-dock__label">Admin</span>
+            </button>
+        </nav>
+
+        <footer class="footer pwa-foot">
+            Support by <a href="http://billinghub.id/" target="_blank" rel="noopener">billinghub.id</a>
+        </footer>
+    </div>
+
+    <div class="modal" id="adminModal">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <div class="modal-handle"></div>
+                <h3 class="modal-title">Hubungi Admin</h3>
+                <button class="close-modal" onclick="closeModal('adminModal')">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="info-box">
+                    <div class="info-icon">👨‍💼</div>
+                    <p class="info-text">Jika Anda mengalami kendala atau membutuhkan bantuan, silahkan hubungi admin
+                        melalui kontak berikut:</p>
+
+                    <div class="admin-contact-info" id="adminContactInfo">
+                        <div class="contact-item">
+                            <div class="contact-icon">📞</div>
+                            <div class="contact-text">
+                                <strong>Nomor WhatsApp Admin:</strong>
+                                <span id="adminWhatsapp">Memuat...</span>
+                                <button class="copy-btn" onclick="copyToClipboard('adminWhatsapp')">Salin Nomor</button>
+                            </div>
+                        </div>
+                        <div class="contact-item">
+                            <div class="contact-icon">💬</div>
+                            <div class="contact-text">
+                                <strong>Catatan:</strong>
+                                Harap sertakan nama dan detail kendala yang dialami saat menghubungi admin.
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="btn-primary" onclick="closeModal('adminModal')"
+                        style="margin-top: 20px;">Tutup</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="buyVoucherModal">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <div class="modal-handle"></div>
+                <h3 class="modal-title">Beli Voucher</h3>
+                <button class="close-modal" onclick="closeModal('buyVoucherModal')">×</button>
+            </div>
+            <div class="modal-body">
+                <!-- Alert container untuk modal pembelian -->
+                <div id="modalAlertContainer" class="modal-alert-container"></div>
+
+                <div class="alert alert-info" style="margin-bottom: 15px;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span style="font-size: 1.1rem;">ℹ️</span>
+                        <span style="font-size: 0.85rem;">Voucher akan dikirim ke WhatsApp Anda maksimal 5 menit setelah
+                            pembayaran berhasil.</span>
+                    </div>
+                </div>
+
+                <form id="buyVoucherForm" onsubmit="return processPurchase(event)">
+                    <div class="voucher-details" id="selectedVoucherInfo">
+                        <!-- Info voucher terpilih akan muncul di sini -->
+                    </div>
+
+                    <div class="form-group">
+                        <label>Nama Lengkap</label>
+                        <input type="text" id="customerName" required>
+                        <small>Minimal 5 karakter, maksimal 100 karakter</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Nomor WhatsApp</label>
+                        <input type="tel" id="customerWhatsapp" required>
+                        <small>Format: 62 (contoh: 6281234567890) atau 0 (contoh: 081234567890)</small>
+                    </div>
+
+                    <!-- Metode pembayaran (Tripay / Qrin / gateway lain) -->
+                    <div class="form-group tripay-methods-wrap" id="paymentMethodGroup" style="display: none;">
+                        <div class="tripay-methods-loading" id="tripayMethodsLoading">Memuat metode pembayaran...</div>
+                        <div class="tripay-method-grid" id="tripayMethodGrid"></div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px;">
+                        <button type="button" class="btn-primary" style="background: var(--danger);"
+                            onclick="closeModal('buyVoucherModal')">
+                            Batal
+                        </button>
+                        <button type="submit" class="btn-primary" style="background: var(--secondary);"
+                            id="submitOrderBtn">
+                            Beli Sekarang
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="successModal">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <div class="modal-handle"></div>
+                <h3 class="modal-title">Pembelian Berhasil</h3>
+                <button class="close-modal" onclick="closeModal('successModal')">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="info-box">
+                    <div class="info-icon success-icon">✅</div>
+                    <p class="info-text" id="successMessage">
+                        Order berhasil dibuat! Membuka metode pembayaran...
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="errorModal">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <div class="modal-handle"></div>
+                <h3 class="modal-title">Terjadi Kesalahan</h3>
+                <button class="close-modal" onclick="closeModal('errorModal')">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="info-box">
+                    <div class="info-icon error-icon">❌</div>
+                    <p class="info-text" id="errorMessage">
+                        Terjadi kesalahan saat memproses pembelian. Silahkan coba lagi.
+                    </p>
+                    <button class="btn-primary" onclick="closeModal('errorModal')">Tutup</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal QRIS / Qrin: hanya tutup lewat tombol X atau Tutup -->
+    <div class="modal" id="qrinPaymentModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-handle"></div>
+                <h3 class="modal-title">Bayar dengan QRIS</h3>
+                <button class="close-modal" onclick="closeModal('qrinPaymentModal')">×</button>
+            </div>
+            <div class="modal-body">
+                <div id="qrinQrSummary" class="qrin-qr-summary" style="display: none;"></div>
+                <p class="info-text" style="margin-bottom: 12px;">Scan QR code berikut dengan e-wallet atau mobile banking Anda:</p>
+                <div id="qris-merchant" class="qris-merchant-box">
+                    <div class="qris-info-overview text-center">
+                        <div class="qris-logo-top">
+                            <img src="qris.png"
+                                alt="QRIS" class="qris-logo-img">
+                        </div>
+                        <div id="qrisCodeContainer" class="qris-code-container">
+                            <canvas id="qrinQrCanvas"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div id="qrinPaymentStatusMsg" class="qrin-status-msg" style="display: none;" role="status"></div>
+                <div id="qrinVoucherResult" class="qrin-voucher-result" style="display: none;">
+                    <p class="qrin-voucher-result-label">Kode voucher Anda</p>
+                    <div class="qrin-voucher-code" id="qrinVoucherCodeDisplay"></div>
+                    <button type="button" class="qrin-va-copy" id="qrinCopyVoucherBtn">Salin kode</button>
+                </div>
+                <p class="qrin-modal-note">Setelah pembayaran, ketuk <strong>Cek Pembayaran</strong> untuk menampilkan kode voucher.</p>
+                <div class="qrin-modal-actions">
+                    <button type="button" class="btn-primary qrin-modal-btn" id="qrinCheckPaymentBtn"
+                        onclick="qrinCheckPaymentStatus()">Cek Pembayaran</button>
+                    <button type="button" class="btn-primary qrin-modal-btn qrin-modal-btn--close"
+                        onclick="closeModal('qrinPaymentModal')">Tutup</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Virtual Account / gerai (Qrin) -->
+    <div class="modal" id="qrinVaModal">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <div class="modal-handle"></div>
+                <h3 class="modal-title" id="qrinVaModalTitle">Virtual Account</h3>
+                <button class="close-modal" onclick="closeModal('qrinVaModal')">×</button>
+            </div>
+            <div class="modal-body">
+                <div id="qrinVaSummary" class="qrin-pay-summary"></div>
+                <div id="qrinVaModalBody" class="qrin-va-list"></div>
+                <p class="tripay-methods-hint" style="margin-top: 12px;">Selesaikan pembayaran sesuai nominal. Voucher juga dikirim ke WhatsApp setelah terverifikasi.</p>
+                <div id="qrinVaPaymentStatusMsg" class="qrin-status-msg" style="display: none;" role="status"></div>
+                <div id="qrinVaVoucherResult" class="qrin-voucher-result" style="display: none;">
+                    <p class="qrin-voucher-result-label">Kode voucher Anda</p>
+                    <div class="qrin-voucher-code" id="qrinVaVoucherCodeDisplay"></div>
+                    <button type="button" class="qrin-va-copy" id="qrinVaCopyVoucherBtn">Salin kode</button>
+                </div>
+                <p class="qrin-modal-note">Setelah pembayaran, ketuk <strong>Cek Pembayaran</strong> untuk menampilkan kode voucher.</p>
+                <div class="qrin-modal-actions">
+                    <button type="button" class="btn-primary qrin-modal-btn" id="qrinVaCheckPaymentBtn"
+                        onclick="qrinCheckPaymentStatus()">Cek Pembayaran</button>
+                    <button type="button" class="btn-primary qrin-modal-btn qrin-modal-btn--close"
+                        onclick="closeModal('qrinVaModal')">Tutup</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="autoLoginConfirmModal">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <div class="modal-handle"></div>
+                <h3 class="modal-title">Auto Login</h3>
+                <button class="close-modal" onclick="closeModal('autoLoginConfirmModal')">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="info-box">
+                    <div class="info-icon">🤖</div>
+                    <p class="info-text">
+                        Kami menemukan kode voucher dari login sebelumnya:
+                        <br>
+                        <strong style="font-size: 1.2rem; color: #1565C0;" id="savedVoucherCode">XXXXXX</strong>
+                    </p>
+                    <p class="info-text" style="margin-top: 10px; font-size: 0.9rem;">
+                        Apakah Anda ingin melanjutkan login dengan kode voucher ini?
+                    </p>
+                    <div class="voucher-details" id="voucherDetails" style="margin: 15px 0; display: none;"></div>
+                    <div class="auto-login-actions">
+                        <button type="button" class="btn-primary auto-login-actions__btn" onclick="useNewVoucher()"
+                            style="background: #dc3545; color: #ffffff;">
+                            Gunakan Voucher Baru
+                        </button>
+                        <button type="button" class="btn-primary auto-login-actions__btn" onclick="confirmAutoLogin()"
+                            style="background: #28a745; color: #ffffff;" id="confirmAutoLoginBtn">
+                            Ya, Lanjutkan Login
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openLoginTab(tabId, buttonEl) {
+            var contents = document.getElementsByClassName("login-tab-content");
+            for (var i = 0; i < contents.length; i++) {
+                contents[i].classList.remove("active");
+            }
+
+            var buttons = document.getElementsByClassName("login-tab-button");
+            for (var j = 0; j < buttons.length; j++) {
+                buttons[j].classList.remove("active");
+            }
+
+            var target = document.getElementById(tabId);
+            if (target) {
+                target.classList.add("active");
+            }
+
+            if (buttonEl) {
+                buttonEl.classList.add("active");
+            }
+        }
+
+        function submitUserPassword() {
+            var usernameInput = document.getElementById("userLogin");
+            var passwordInput = document.getElementById("userPassword");
+            var form = document.forms.loginuser;
+            var submitBtn = document.getElementById("submitUserPassBtn");
+
+            var username = (usernameInput.value || "").trim();
+            var password = passwordInput.value || "";
+
+            if (!username || !password) {
+                if (typeof showAlert === "function") {
+                    showAlert("Silahkan isi Username dan Password", "warning");
+                } else {
+                    alert("Silahkan isi Username dan Password");
+                }
+                return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = "Memproses...";
+
+            try {
+                form.username.value = username;
+
+                var chapId = "$(chap-id)" || "";
+                var chapChallenge = "$(chap-challenge)" || "";
+
+                if (chapId && chapChallenge && typeof hexMD5 === "function") {
+                    var hashString = chapId + password + chapChallenge;
+                    form.password.value = hexMD5(hashString);
+                } else {
+                    form.password.value = password;
+                }
+
+                if (typeof showLoading === "function") {
+                    showLoading(true);
+                }
+
+                setTimeout(function () {
+                    form.submit();
+                }, 500);
+            } catch (e) {
+                console.error("Login user/password error:", e);
+                if (typeof showAlert === "function") {
+                    showAlert("Terjadi kesalahan saat login: " + e.message, "danger");
+                } else {
+                    alert("Terjadi kesalahan saat login: " + e.message);
+                }
+                submitBtn.disabled = false;
+                submitBtn.textContent = "Masuk";
+                if (typeof showLoading === "function") {
+                    showLoading(false);
+                }
+            }
+        }
+    </script>
+
+    <script>
+        document.querySelectorAll('.router-notice').forEach(function (el) {
+            if (/\$\(/.test(el.textContent)) el.style.display = 'none';
+        });
+    </script>
+    <script src="config.js"></script>
+    <script src="md5.js"></script>
+    <script>
+        (function () {
+            function supportsModernScript() {
+                try {
+                    if (!window.fetch || !window.Promise || !window.URLSearchParams) {
+                        return false;
+                    }
+                    new Function("const a = 1; let b = 2; return `${a + b}`;");
+                    new Function("return (async function(){ return 1; });");
+                    return true;
+                } catch (e) {
+                    return false;
+                }
+            }
+
+            var script = document.createElement("script");
+            script.src = supportsModernScript() ? "billinghub.js" : "billinghub.legacy.js";
+            document.body.appendChild(script);
+        })();
+    </script>
+</body>
+
+</html>
